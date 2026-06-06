@@ -1,14 +1,14 @@
 /* ==========================================================================
-   style.css - จัดรูปแบบหน้าพิมพ์เอกสารคำร้องขอย้ายออก/ลาออก (ตรงตามแบบฟอร์มจริง)
+   style.css - สำหรับจัดข้อความวางบนเส้นตามรูปแบบหนังสือราชการไทยอย่างเป็นระเบียบ
    ========================================================================== */
 
 @import url('https://fonts.googleapis.com/css2?family=Sarabun:wght@400;600;700&display=swap');
 
 body {
     font-family: 'Sarabun', sans-serif;
-    font-size: 15pt;
+    font-size: 16pt; /* ขนาดตัวอักษรมาตรฐานหนังสือราชการ */
     color: #000;
-    line-height: 1.6;
+    line-height: 1.8; /* ระยะบรรทัดเผื่อให้ข้อความอยู่บนเส้นได้อย่างสวยงาม */
     margin: 0;
     padding: 0;
     background-color: #fafafa;
@@ -17,72 +17,94 @@ body {
 .page-container {
     width: 21cm;
     min-height: 29.7cm;
-    padding: 2.5cm 2cm 2.5cm 3cm; /* บน 2.5, ขวา 2, ล่าง 2.5, ซ้าย 3 ซม. */
+    padding: 2.5cm 2cm 2.5cm 3cm; /* ขอบราชการ: บน 2.5, ขวา 2, ล่าง 2.5, ซ้าย 3 ซม. */
     margin: 1cm auto;
     background: white;
     box-shadow: 0 0 10px rgba(0,0,0,0.1);
     box-sizing: border-box;
-    position: relative;
 }
 
+/* ตราครุฑสูง 3 ซม. ตรงตามหลักการจัดรูปแบบ */
 .garuda-icon {
     display: block;
-    height: 3cm; /* ขนาดตราครุฑสูง 3 ซม. มาตรฐาน */
+    height: 3cm;
     width: auto;
-    margin: 0 auto 0.4cm auto;
+    margin: 0 auto 0.5cm auto;
     object-fit: contain;
 }
 
 .doc-title {
     text-align: center;
-    font-size: 16pt;
+    font-size: 18pt;
     font-weight: bold;
     margin-bottom: 0.2cm;
 }
 
 .title-line {
     border-bottom: 1px dotted #000;
-    width: 60%;
+    width: 55%;
     margin: 0 auto 0.8cm auto;
 }
 
 .text-right { text-align: right; }
-.indent { text-indent: 2.5cm; }
-.flex-row { display: flex; flex-wrap: wrap; margin-bottom: 0.2cm; align-items: flex-end; }
-.dotted-line { flex: 1; border-bottom: 1px dotted #000; margin-left: 5px; padding-left: 8px; font-weight: bold; min-height: 22px; }
+.indent { display: inline-block; width: 2.5cm; } /* ย่อหน้ามาตรฐานราชการ 2.5 ซม. */
+
+/* --- ระบบกล่องข้อความทับเส้น (Text on Line) --- */
+.line-field {
+    display: inline-block;
+    position: relative;
+    border-bottom: 1px dotted #000; /* เส้นประด้านล่าง */
+    text-align: center;
+    padding: 0 4px;
+    vertical-align: bottom;
+    margin-bottom: -1px;
+}
+
+/* ตัวอักษรข้อมูลระบบที่จะไปลอยอยู่บนเส้น */
+.line-value {
+    font-weight: bold;
+    color: #000;
+    position: relative;
+    top: -2px; /* ดึงตัวอักษรขึ้นมาลอยเหนือกองเส้นเล็กน้อยไม่ให้ทับเส้นจุด */
+}
+
+/* บล็อกจัดแถวที่มีการผสมข้อความและเส้นประ */
+.gov-row {
+    margin-bottom: 0.3cm;
+    text-align: justify;
+    word-break: break-all;
+}
 
 .checkbox-group { display: inline-flex; align-items: center; margin-right: 15px; }
-.checkbox-box { width: 13pt; height: 13pt; border: 1px solid #000; margin-right: 6px; display: inline-block; text-align: center; line-height: 13pt; font-weight: bold; font-size: 11pt; }
+.checkbox-box { width: 14pt; height: 14pt; border: 1px solid #000; margin-right: 6px; display: inline-block; text-align: center; line-height: 13pt; font-weight: bold; font-size: 11pt; }
 
-/* โครงสร้างตารางด้านล่างตามภาพแบบฟอร์มเป๊ะๆ */
+/* --- โครงสร้างตารางส่วนล่างแผ่น --- */
 .form-table {
     width: 100%;
     border-collapse: collapse;
-    margin-top: 0.8cm;
+    margin-top: 1cm;
 }
 
 .form-table th, .form-table td {
     border: 1px solid #000;
-    padding: 8px;
+    padding: 10px;
     vertical-align: top;
-    font-size: 14pt;
+    font-size: 15pt;
 }
 
 .form-table th {
     font-weight: bold;
     text-align: center;
-    background-color: #fff;
 }
 
 .sub-table {
     width: 100%;
     border-collapse: collapse;
-    margin-top: 5px;
 }
 .sub-table td {
     border: none !important;
     border-right: 1px solid #000 !important;
-    padding: 5px 2px !important;
+    padding: 5px !important;
 }
 .sub-table td:last-child {
     border-right: none !important;
@@ -90,8 +112,8 @@ body {
 
 .table-dotted {
     border-bottom: 1px dotted #000;
-    margin-top: 18px;
-    height: 15px;
+    margin-top: 25px;
+    height: 1px;
 }
 
 .sig-wrap {
@@ -100,12 +122,12 @@ body {
 }
 
 .sig-img {
-    max-height: 45px;
+    max-height: 50px;
     display: block;
-    margin: 0 auto -12px auto;
+    margin: 0 auto -15px auto;
 }
 
-/* ควบคุมสำหรับ Print Mode */
+/* ควบคุมการพิมพ์จริงออกเครื่องปริ้น */
 @media print {
     body { background: none; }
     .page-container {
