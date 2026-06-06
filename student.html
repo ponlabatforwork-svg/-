@@ -1,1 +1,274 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ระบบยื่นคำร้องสำหรับนักเรียน/ผู้ปกครอง</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;600&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdn.jsdelivr.net/npm/signature_pad@4.1.7/dist/signature_pad.umd.min.js"></script>
 
+    <style>
+        body { font-family: 'Sarabun', sans-serif; background-color: #f4f6f9; margin: 0; padding: 20px; }
+        .container { max-width: 800px; margin: auto; background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.05); }
+        h2, h3 { color: #2b3e50; border-bottom: 2px solid #eee; padding-bottom: 10px; }
+        .form-group { margin-bottom: 20px; }
+        label { display: block; font-weight: 600; margin-bottom: 8px; color: #444; }
+        input[type="text"], select { width: 100%; padding: 10px; box-sizing: border-box; border: 1px solid #ddd; border-radius: 6px; font-size: 16px; }
+        .radio-group { display: flex; gap: 20px; margin-top: 5px; }
+        .radio-item { display: flex; align-items: center; gap: 8px; }
+        .signature-area { border: 2px dashed #ccc; background: #fafafa; border-radius: 6px; position: relative; margin-top: 10px; }
+        canvas { width: 100%; height: 150px; }
+        .btn { padding: 12px 24px; border: none; border-radius: 6px; cursor: pointer; font-size: 16px; font-family: 'Sarabun', sans-serif; }
+        .btn-primary { background: #2b3e50; color: white; }
+        .btn-secondary { background: #e0e0e0; color: #333; }
+        
+        /* สไตล์หน้าจอติดตามสถานะ */
+        .status-timeline { margin-top: 30px; padding: 20px; background: #f8f9fa; border-radius: 8px; }
+        .status-step { display: flex; align-items: center; gap: 15px; margin-bottom: 15px; opacity: 0.4; }
+        .status-step.active { opacity: 1; color: #2e7d32; font-weight: bold; }
+        .status-step i { font-size: 20px; }
+        .rejected-box { background: #ffebee; border-left: 5px solid #c62828; padding: 15px; color: #c62828; margin-bottom: 20px; border-radius: 4px; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div id="tracking-section" style="display: none;">
+        <h2><i class="fa-solid fa-magnifying-glass"></i> สถานะคำร้องของคุณ</h2>
+        <div id="rejected-alert" class="rejected-box" style="display: none;">
+            <strong><i class="fa-solid fa-circle-exclamation"></i> คำร้องถูกตีกลับให้แก้ไข:</strong> <span id="reject-reason">-</span>
+            <br><button class="btn btn-secondary" onclick="enableEditForm()" style="margin-top:10px; padding:5px 10px; font-size:14px;">แก้ไขข้อมูล</button>
+        </div>
+        
+        <div class="status-timeline">
+            <div class="status-step" id="step-1"><i class="fa-solid fa-paper-plane"></i> <span>ส่งไปยังฝ่ายทะเบียนเพื่อตรวจสอบ</span></div>
+            <div class="status-step" id="step-2"><i class="fa-solid fa-file-import"></i> <span>ฝ่ายทะเบียนรับเรื่องแล้ว</span></div>
+            <div class="status-step" id="step-3"><i class="fa-solid fa-spinner fa-spin"></i> <span>ฝ่ายทะเบียนกำลังตรวจสอบ</span></div>
+            <div class="status-step" id="step-4"><i class="fa-solid fa-share-nodes"></i> <span>คำขอถูกส่งไปยังผู้พิจารณาแล้ว</span></div>
+            <div class="status-step" id="step-5"><i class="fa-solid fa-user-check"></i> <span>ผู้พิจารณารับเรื่องแล้ว</span></div>
+            <div class="status-step" id="step-6"><i class="fa-solid fa-user-gear"></i> <span>ผู้พิจารณากำลังตรวจสอบ</span></div>
+            <div class="status-step" id="step-7"><i class="fa-solid fa-circle-check"></i> <span>เสร็จสิ้น</span></div>
+        </div>
+        
+        <div style="margin-top: 20px; text-align: center;">
+            <button id="btn-print-pdf" class="btn btn-primary" onclick="generatePDF()" disabled><i class="fa-solid fa-file-pdf"></i> พิมพ์ PDF เพื่อตรวจสอบผลการพิจารณา</button>
+        </div>
+    </div>
+
+    <form id="request-form" onsubmit="submitRequest(event)">
+        <h2><i class="fa-solid fa-file-signature"></i> แบบฟอร์มขอย้ายออก/ลาออกจากสถานศึกษา</h2>
+        
+        <h3>ข้อมูลผู้ปกครอง</h3>
+        <div class="form-group">
+            <label>คำนำหน้า</label>
+            <select id="parent-title" required>
+                <option value="">-- เลือกคำนำหน้า --</option>
+                <option value="นาย">นาย</option>
+                <option value="นาง">นาง</option>
+                <option value="นางสาว">นางสาว</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label>ชื่อ-สกุล ผู้ปกครอง</label>
+            <input type="text" id="parent-name" placeholder="กรอกชื่อ-นามสกุล" required>
+        </div>
+
+        <h3>ข้อมูลนักเรียน</h3>
+        <div class="form-group">
+            <label>คำนำหน้า</label>
+            <select id="student-title" required>
+                <option value="">-- เลือกคำนำหน้า --</option>
+                <option value="เด็กชาย">เด็กชาย</option>
+                <option value="เด็กหญิง">เด็กหญิง</option>
+                <option value="นาย">นาย</option>
+                <option value="นางสาว">นางสาว</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label>ชื่อ-สกุล นักเรียน</label>
+            <input type="text" id="student-name" placeholder="กรอกชื่อ-นามสกุล" required>
+        </div>
+        <div class="form-group">
+            <label>ชั้นมัธยมศึกษาปีที่</label>
+            <input type="text" id="student-grade" placeholder="เช่น 3/1" required>
+        </div>
+        <div class="form-group">
+            <label>เลขประจำตัวนักเรียน</label>
+            <input type="text" id="student-id" readonly>
+        </div>
+        <div class="form-group">
+            <label>ปีการศึกษา</label>
+            <input type="text" id="academic-year" placeholder="เช่น 2026" required>
+        </div>
+
+        <h3>ความประสงค์</h3>
+        <div class="form-group">
+            <div class="radio-group">
+                <div class="radio-item"><input type="radio" name="intent" value="ลาออก" required> ลาออก</div>
+                <div class="radio-item"><input type="radio" name="intent" value="ย้ายออก" required> ย้ายออก</div>
+            </div>
+        </div>
+
+        <h3>ความจำเป็น (เลือกได้แค่ 1 ข้อ)</h3>
+        <div class="form-group">
+            <div class="radio-group" style="flex-direction: column; gap: 10px;">
+                <div class="radio-item"><input type="radio" name="reason" value="ไปศึกษาต่อที่" onclick="toggleReasonInput(true)" required> ไปศึกษาต่อที่</div>
+                <div class="radio-item"><input type="radio" name="reason" value="ไปประกอบอาชีพ" onclick="toggleReasonInput(true)"> ไปประกอบอาชีพ</div>
+                <div class="radio-item"><input type="radio" name="reason" value="อื่นๆ" onclick="toggleReasonInput(true)"> อื่นๆ</div>
+            </div>
+            <div id="reason-detail-container" style="display: none; margin-top: 10px;">
+                <label>ระบุรายละเอียดเพิ่มเติม</label>
+                <input type="text" id="reason-detail" placeholder="โปรดระบุรายละเอียด...">
+            </div>
+        </div>
+
+        <h3>ลายเซ็นอิเล็กทรอนิกส์ผู้ปกครอง</h3>
+        <div class="form-group">
+            <div class="signature-area">
+                <canvas id="signature-pad"></canvas>
+            </div>
+            <button type="button" class="btn btn-secondary" onclick="clearSignature()" style="margin-top:5px; padding:5px 10px; font-size:14px;">ล้างลายเซ็น</button>
+        </div>
+
+        <div style="text-align: right; margin-top: 30px;">
+            <button type="submit" class="btn btn-primary"><i class="fa-solid fa-paper-plane"></i> ส่งคำขอไปยังฝ่ายทะเบียน</button>
+        </div>
+    </form>
+</div>
+
+<script type="module">
+    import { db, doc, setDoc, onSnapshot } from "./js/app.js";
+
+    const studentId = localStorage.getItem('studentId');
+    if (!studentId) { window.location.href = 'index.html'; }
+    document.getElementById('student-id').value = studentId;
+
+    // ตั้งค่า Signature Pad
+    const canvas = document.getElementById('signature-pad');
+    const signaturePad = new SignaturePad(canvas);
+
+    // ปรับขนาดแคนวาสให้พอดี
+    function resizeCanvas() {
+        const ratio = Math.max(window.devicePixelRatio || 1, 1);
+        canvas.width = canvas.offsetWidth * ratio;
+        canvas.height = canvas.offsetHeight * ratio;
+        canvas.getContext("2d").scale(ratio, ratio);
+        signaturePad.clear();
+    }
+    window.addEventListener("resize", resizeCanvas);
+    resizeCanvas();
+
+    window.clearSignature = () => signaturePad.clear();
+
+    // เปิด/ปิดช่องกรอกเหตุผลเพิ่มเติม
+    window.toggleReasonInput = function(show) {
+        document.getElementById('reason-detail-container').style.display = show ? 'block' : 'none';
+        document.getElementById('reason-detail').required = show;
+    }
+
+    // ฟังสถานะเรียลไทม์จาก Firebase
+    onSnapshot(doc(db, "requests", studentId), (docSnap) => {
+        if (docSnap.exists()) {
+            const data = docSnap.data();
+            document.getElementById('request-form').style.display = 'none';
+            document.getElementById('tracking-section').style.display = 'block';
+            
+            // รีเซ็ตคลาสสถานะทั้งหมดก่อน
+            document.querySelectorAll('.status-step').forEach(el => el.classList.remove('active'));
+            
+            // อัปเดตสเต็ปตามสถานะปัจจุบัน
+            const statusMap = {
+                "ส่งไปยังฝ่ายทะเบียนเพื่อตรวจสอบ": 1,
+                "ฝ่ายทะเบียนรับเรื่องแล้ว": 2,
+                "ฝ่ายทะเบียนกำลังตรวจสอบ": 3,
+                "คำขอถูกส่งไปยังผู้พิจารณาแล้ว": 4,
+                "ผู้พิจารณารับเรื่องแล้ว": 5,
+                "ผู้พิจารณากำลังตรวจสอบ": 6,
+                "เสร็จสิ้น": 7
+            };
+            
+            const currentStep = statusMap[data.status] || 1;
+            for(let i=1; i<=currentStep; i++) {
+                document.getElementById(`step-${i}`).classList.add('active');
+            }
+
+            // จัดการการตีกลับ
+            if (data.isRejected) {
+                document.getElementById('rejected-alert').style.display = 'block';
+                document.getElementById('reject-reason').innerText = data.rejectReason;
+            } else {
+                document.getElementById('rejected-alert').style.display = 'none';
+            }
+
+            // ปุ่มเปิดให้พิมพ์ PDF (เมื่อ ผอ. อนุมัติแล้วเท่านั้น)
+            if (data.directorApproval === 'approved') {
+                document.getElementById('btn-print-pdf').disabled = false;
+            }
+        } else {
+            document.getElementById('request-form').style.display = 'block';
+            document.getElementById('tracking-section').style.display = 'none';
+        }
+    });
+
+    // ส่งคำขอเข้าสู่ระบบ Firebase
+    window.submitRequest = async function(e) {
+        e.preventDefault();
+        if (signaturePad.isEmpty()) {
+            Swal.fire('กรุณาเซ็นชื่อ', 'โปรดลงลายเซ็นผู้ปกครองก่อนส่งคำขอ', 'warning');
+            return;
+        }
+
+        const parentTitle = document.getElementById('parent-title').value;
+        const parentName = document.getElementById('parent-name').value;
+        const studentTitle = document.getElementById('student-title').value;
+        const studentName = document.getElementById('student-name').value;
+        const studentGrade = document.getElementById('student-grade').value;
+        const academicYear = document.getElementById('academic-year').value;
+        const intent = document.querySelector('input[name="intent"]:checked').value;
+        const reasonType = document.querySelector('input[name="reason"]:checked').value;
+        const reasonDetail = document.getElementById('reason-detail').value;
+        const parentSig = signaturePad.toDataURL(); // แปลงลายเซ็นเป็นรูป Base64
+
+        Swal.fire({
+            title: 'ยืนยันการส่งคำขอ?',
+            text: "ข้อมูลจะถูกส่งไปยังฝ่ายทะเบียนเพื่อตรวจสอบสถานะเรียลไทม์",
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonText: 'ยืนยันส่ง',
+            cancelButtonText: 'ยกเลิก'
+        }).then(async (result) => {
+            if (result.isConfirmed) {
+                try {
+                    await setDoc(doc(db, "requests", studentId), {
+                        studentId, parentTitle, parentName, studentTitle, studentName,
+                        studentGrade, academicYear, intent, reasonType, reasonDetail,
+                        parentSignature: parentSig,
+                        status: "ส่งไปยังฝ่ายทะเบียนเพื่อตรวจสอบ",
+                        isRejected: false,
+                        rejectReason: "",
+                        directorApproval: "pending", // รอดำเนินการ
+                        timestamp: new Date()
+                    });
+                    Swal.fire('สำเร็จ!', 'ส่งคำขอเรียบร้อยแล้ว', 'success');
+                } catch (error) {
+                    Swal.fire('เกิดข้อผิดพลาด', error.message, 'error');
+                }
+            }
+        });
+    }
+
+    window.enableEditForm = function() {
+        document.getElementById('request-form').style.display = 'block';
+        document.getElementById('tracking-section').style.display = 'none';
+    }
+
+    window.generatePDF = function() {
+        // ส่วนนี้จะดึงดีไซน์สารบรรณจาก style.css มาพิมพ์ (จะอัปเดตระบบพิมพ์ให้ในส่วนถัดไป)
+        Swal.fire('เตรียมพิมพ์ PDF', 'ระบบกำลังดึงข้อมูลใบเสร็จรับเรื่องทางการ...', 'info');
+    }
+</script>
+
+</body>
+</html>
