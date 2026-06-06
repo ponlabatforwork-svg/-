@@ -4,270 +4,170 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>พิมพ์แบบคำร้องขอย้ายออก/ลาออกจากสถานศึกษา</title>
-    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;600;700&display=swap" rel="stylesheet">
     
-    <style>
-        /* --- CSS สำหรับจัดหน้ากระดาษราชการ --- */
-        body {
-            font-family: 'Sarabun', sans-serif;
-            font-size: 16pt; /* ขนาดตัวอักษรมาตรฐานหนังสือราชการ TH Sarabun */
-            color: #000;
-            line-height: 1.6;
-            margin: 0;
-            padding: 0;
-            background-color: #fafafa;
-        }
-
-        .page-container {
-            width: 21cm;
-            min-height: 29.7cm; /* ขนาด A4 */
-            padding: 2.5cm 2cm 2.5cm 3cm; /* ระยะขอบราชการ: บน 2.5, ขวา 2, ล่าง 2.5, ซ้าย 3 ซม. */
-            margin: 1cm auto;
-            background: white;
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
-            box-sizing: border-box;
-            position: relative;
-        }
-
-        /* ตั้งค่าขนาดตราครุฑให้สูง 3 ซม. ตามบรีฟ */
-        .garuda-icon {
-            display: block;
-            height: 3cm; 
-            width: auto;
-            margin: 0 auto 0.5cm auto;
-            object-fit: contain;
-        }
-
-        .doc-title {
-            text-align: center;
-            font-size: 18pt;
-            font-weight: bold;
-            margin-bottom: 1cm;
-        }
-
-        .text-right { text-align: right; }
-        .text-center { text-align: center; }
-        .indent { text-indent: 2.5cm; }
-        .flex-row { display: flex; flex-wrap: wrap; margin-bottom: 0.3cm; }
-        .dotted-line { flex: 1; border-bottom: 1px dotted #000; margin-left: 5px; padding-left: 10px; font-weight: bold; }
-        
-        .checkbox-group { display: inline-flex; align-items: center; margin-right: 15px; }
-        .checkbox-box { width: 14pt; height: 14pt; border: 1px solid #000; margin-right: 8px; display: inline-block; text-align: center; line-height: 14pt; font-weight: bold; }
-
-        /* ส่วนท้าย: ลายเซ็นและการพิจารณา */
-        .footer-sections {
-            margin-top: 1cm;
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 20px;
-        }
-
-        .section-box {
-            border: 1px solid #000;
-            padding: 15px;
-            font-size: 14pt;
-            line-height: 1.5;
-        }
-
-        .sig-wrap {
-            text-align: center;
-            margin-top: 0.5cm;
-            position: relative;
-        }
-
-        .sig-img {
-            max-height: 40px;
-            display: block;
-            margin: 0 auto -10px auto;
-        }
-
-        /* --- สไตล์ควบคุมการพิมพ์ปริ้นเตอร์ (@media print) --- */
-        @media print {
-            body { background: none; }
-            .page-container {
-                margin: 0;
-                box-shadow: none;
-                padding: 2.5cm 2cm 2.5cm 3cm;
-                width: 100%;
-                height: auto;
-            }
-            @page {
-                size: A4 portrait;
-                margin: 0;
-            }
-        }
-    </style>
+    <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
 
 <div class="page-container">
     <img src="https://img2.pic.in.th/IMG_310817b09e35a3e89933.png" alt="ตราครุฑ" class="garuda-icon">
     
-    <div class="doc-title">แบบคำร้องขอย้ายออก/ลาออกจากสถานศึกษา</div>
+    [span_0](start_span)<div class="doc-title">แบบคำร้องขอย้ายออก/ลาออกจากสถานศึกษา</div>[span_0](end_span)
 
     <div class="text-right" style="margin-bottom: 0.2cm;">
-        เขียนที่ <span id="lbl-school-name" style="font-weight:bold;">...................................................</span>
+        [span_1](start_span)เขียนที่ <span id="lbl-school-name" style="font-weight:bold;">...................................................</span>[span_1](end_span)
     </div>
     <div class="text-right" style="margin-bottom: 0.8cm;">
-        วันที่.....<span id="lbl-day">..</span>.....เดือน..........<span id="lbl-month">......</span>..........พ.ศ......<span id="lbl-year">....</span>.....
+        [span_2](start_span)วันที่.....<span id="lbl-day">..</span>.....เดือน..........<span id="lbl-month">......</span>..........พ.ศ......<span id="lbl-year">....</span>.....[span_2](end_span)
     </div>
 
-    <div style="margin-bottom: 0.3cm;">เรียน ผู้อำนวยการโรงเรียน<span id="lbl-school-title" style="font-weight:bold;">...................................................</span></div>
-    <div style="margin-bottom: 0.6cm; padding-left: 1cm;">เรื่อง ขอย้ายออก/ลาออกจากสถานศึกษา</div>
+    [span_3](start_span)<div style="margin-bottom: 0.3cm;">เรียน ผู้อำนวยการโรงเรียน<span id="lbl-school-title" style="font-weight:bold;">...................................................</span></div>[span_3](end_span)
+    [span_4](start_span)<div style="margin-bottom: 0.6cm; padding-left: 1cm;">เรื่อง ขอย้ายออก/ลาออกจากสถานศึกษา</div>[span_4](end_span)
 
     <div class="flex-row">
-        ข้าพเจ้า (นาย/นาง/นางสาว)<div class="dotted-line" id="pdf-parent-name"></div>
+        [span_5](start_span)ข้าพเจ้า (นาย/นาง/นางสาว)<div class="dotted-line" id="pdf-parent-name"></div>[span_5](end_span)
     </div>
     <div class="flex-row">
-        เป็นผู้ปกครองของ (เด็กหญิง/เด็กชาย/นาย/นางสาว)<div class="dotted-line" id="pdf-student-name"></div>
+        [span_6](start_span)เป็นผู้ปกครองของ (เด็กหญิง/เด็กชาย/นาย/นางสาว)<div class="dotted-line" id="pdf-student-name"></div>[span_6](end_span)
     </div>
     <div class="flex-row">
-        นักเรียนระดับชั้นมัธยมศึกษาปีที่<div class="dotted-line" id="pdf-grade" style="flex:0 0 4cm;"></div>
-        เลขประจำตัวนักเรียน<div class="dotted-line" id="pdf-std-id"></div>
-        ปีการศึกษา<div class="dotted-line" id="pdf-year" style="flex:0 0 3cm;"></div>
+        [span_7](start_span)นักเรียนระดับชั้นมัธยมศึกษาปีที่<div class="dotted-line" id="pdf-grade" style="flex:0 0 4cm;"></div>[span_7](end_span)
+        [span_8](start_span)เลขประจำตัวนักเรียน<div class="dotted-line" id="pdf-std-id"></div>[span_8](end_span)
+        [span_9](start_span)ปีการศึกษา<div class="dotted-line" id="pdf-year" style="flex:0 0 3cm;"></div>[span_9](end_span)
     </div>
 
     <div style="margin: 0.5cm 0;">
-        <span class="indent">มีความประสงค์จะขอ</span>
-        <span class="checkbox-group"><span class="checkbox-box" id="chk-quit"></span> ลาออก</span>
-        <span class="checkbox-group"><span class="checkbox-box" id="chk-move"></span> ย้ายออก</span>
-        เนื่องด้วยมีความจำเป็นดังต่อไปนี้
+        [span_10](start_span)<span class="indent">มีความประสงค์จะขอ</span>[span_10](end_span)
+        [span_11](start_span)<span class="checkbox-group"><span class="checkbox-box" id="chk-quit"></span> ลาออก</span>[span_11](end_span)
+        [span_12](start_span)<span class="checkbox-group"><span class="checkbox-box" id="chk-move"></span> ย้ายออก</span>[span_12](end_span)
+        [span_13](start_span)เนื่องด้วยมีความจำเป็นดังต่อไปนี้[span_13](end_span)
     </div>
 
     <div class="flex-row">
-        <span class="checkbox-group" style="padding-left: 1.5cm;"><span class="checkbox-box" id="chk-reason-study"></span> ไปศึกษาต่อที่</span>
-        <div class="dotted-line" id="pdf-reason-study"></div>
+        [span_14](start_span)<span class="checkbox-group" style="padding-left: 1.5cm;"><span class="checkbox-box" id="chk-reason-study"></span> ไปศึกษาต่อที่</span>[span_14](end_span)
+        [span_15](start_span)<div class="dotted-line" id="pdf-reason-study"></div>[span_15](end_span)
     </div>
     <div class="flex-row">
-        <span class="checkbox-group" style="padding-left: 1.5cm;"><span class="checkbox-box" id="chk-reason-job"></span> ไปประกอบอาชีพ</span>
-        <div class="dotted-line" id="pdf-reason-job" style="visibility: hidden;"></div>
+        [span_16](start_span)<span class="checkbox-group" style="padding-left: 1.5cm;"><span class="checkbox-box" id="chk-reason-job"></span> ไปประกอบอาชีพ</span>[span_16](end_span)
+        [span_17](start_span)<div class="dotted-line" id="pdf-reason-job" style="visibility: hidden;"></div>[span_17](end_span)
     </div>
     <div class="flex-row">
-        <span class="checkbox-group" style="padding-left: 1.5cm;"><span class="checkbox-box" id="chk-reason-other"></span> อื่นๆ (ระบุ)</span>
-        <div class="dotted-line" id="pdf-reason-other"></div>
+        [span_18](start_span)<span class="checkbox-group" style="padding-left: 1.5cm;"><span class="checkbox-box" id="chk-reason-other"></span> อื่นๆ (ระบุ)</span>[span_18](end_span)
+        [span_19](start_span)<div class="dotted-line" id="pdf-reason-other"></div>[span_19](end_span)
     </div>
 
     <div style="margin-top: 1cm; margin-bottom: 1cm; padding-left: 8cm; text-align: center;">
-        ขอแสดงความนับถือ<br><br>
+        [span_20](start_span)ขอแสดงความนับถือ<br><br>[span_20](end_span)
         <div class="sig-wrap">
-            <img src="" id="img-parent-sig" class="sig-img" style="display:none;">
-            ลงชื่อ..........................................................ผู้ปกครอง<br>
-            (<span id="pdf-parent-sub">..........................................................</span>)
+            [span_21](start_span)<img src="" id="img-parent-sig" class="sig-img" style="display:none;">[span_21](end_span)
+            [span_22](start_span)ลงชื่อ..........................................................ผู้ปกครอง<br>[span_22](end_span)
+            (<span id="pdf-parent-sub">..........................................................</span>) [span_23](start_span)
         </div>
     </div>
 
-    <hr style="border: 0; border-top: 1px dashed #000; margin: 0.5cm 0;">
+    <hr style="border: 0; border-top: 1px dashed #000; margin: 0.5cm 0;">[span_23](end_span)
 
     <div class="footer-sections">
         <div class="section-box">
-            <strong>ความคิดเห็นคุณครูที่ปรึกษา</strong><br>
-            <div style="margin-top: 0.2cm;"><span class="checkbox-box"></span> ทราบและเห็นควรเสนอฝ่ายทะเบียน</div>
+            [span_24](start_span)<strong>ความคิดเห็นคุณครูที่ปรึกษา</strong><br>[span_24](end_span)
+            [span_25](start_span)<div style="margin-top: 0.2cm;"><span class="checkbox-box"></span> ทราบและเห็นควรเสนอฝ่ายทะเบียน</div>[span_25](end_span)
             <div class="sig-wrap" style="margin-top: 0.6cm;">
-                ลงชื่อ................................................ครูที่ปรึกษาคนที่ ๑<br>
-                ลงชื่อ................................................ครูที่ปรึกษาคนที่ ๒
+                [span_26](start_span)ลงชื่อ................................................ครูที่ปรึกษาคนที่ ๑<br>[span_26](end_span)
+                [span_27](start_span)ลงชื่อ................................................ครูที่ปรึกษาคนที่ ๒[span_27](end_span)
             </div>
         </div>
         
         <div class="section-box">
-            <strong>ผู้อำนวยการสถานศึกษา</strong><br>
+            [span_28](start_span)<strong>ผู้อำนวยการสถานศึกษา</strong><br>[span_28](end_span)
             <div style="margin-top: 0.2cm;">
-                <span class="checkbox-box" id="chk-dir-approve"></span> อนุมัติ &nbsp;&nbsp;&nbsp;
-                <span class="checkbox-box" id="chk-dir-disapprove"></span> ไม่อนุมัติ
+                [span_29](start_span)<span class="checkbox-box" id="chk-dir-approve"></span> อนุมัติ &nbsp;&nbsp;&nbsp;[span_29](end_span)
+                [span_30](start_span)<span class="checkbox-box" id="chk-dir-disapprove"></span> ไม่อนุมัติ[span_30](end_span)
             </div>
             <div class="sig-wrap" style="margin-top: 0.4cm;">
-                <img src="" id="img-director-sig" class="sig-img" style="display:none;">
-                ลงชื่อ..........................................................<br>
-                (<span id="lbl-director-name">......................................................</span>)<br>
-                ผู้อำนวยการสถานศึกษา
+                [span_31](start_span)<img src="" id="img-director-sig" class="sig-img" style="display:none;">[span_31](end_span)
+                [span_32](start_span)ลงชื่อ..........................................................<br>[span_32](end_span)
+                (<span id="lbl-director-name">......................................................</span>)[span_33](start_span)<br>[span_33](end_span)
+                [span_34](start_span)ผู้อำนวยการสถานศึกษา[span_34](end_span)
             </div>
         </div>
     </div>
 </div>
 
 <script type="module">
-    import { db, doc, getDoc } from "./js/app.js";
+    [span_35](start_span)import { db, doc, getDoc } from "./js/app.js";[span_35](end_span)
 
-    document.addEventListener("DOMContentLoaded", async () => {
-        const requestId = localStorage.getItem('print_target_id');
-        if (!requestId) { alert("ไม่พบรหัสคำร้องขอดำเนินการพิมพ์"); return; }
+    [span_36](start_span)document.addEventListener("DOMContentLoaded", async () => {[span_36](end_span)
+        [span_37](start_span)const requestId = localStorage.getItem('print_target_id');[span_37](end_span)
+        if (!requestId) { alert("ไม่พบรหัสคำร้องขอดำเนินการพิมพ์"); return; [span_38](start_span)}
 
         try {
-            // 1. โหลดข้อมูลสถาบัน/ชื่อ ผอ. จากระบบส่วนกลาง
-            const systemSnap = await getDoc(doc(db, "system", "settings"));
-            if(systemSnap.exists()) {
-                const sys = systemSnap.data();
-                document.getElementById('lbl-school-name').innerText = sys.schoolName || '';
-                document.getElementById('lbl-school-title').innerText = sys.schoolName || '';
-                document.getElementById('lbl-director-name').innerText = sys.directorName || 'ผู้อำนวยการโรงเรียน';
+            const systemSnap = await getDoc(doc(db, "system", "settings"));[span_38](end_span)
+            [span_39](start_span)if(systemSnap.exists()) {[span_39](end_span)
+                [span_40](start_span)const sys = systemSnap.data();[span_40](end_span)
+                document.getElementById('lbl-school-name').innerText = sys.schoolName || [span_41](start_span)'';[span_41](end_span)
+                document.getElementById('lbl-school-title').innerText = sys.schoolName || [span_42](start_span)'';[span_42](end_span)
+                document.getElementById('lbl-director-name').innerText = sys.directorName || [span_43](start_span)'ผู้อำนวยการโรงเรียน';[span_43](end_span)
             }
 
-            // 2. โหลดข้อมูลใบคำร้องหลัก
-            const docSnap = await getDoc(doc(db, "requests", requestId));
-            if (docSnap.exists()) {
-                const data = docSnap.data();
+            [span_44](start_span)const docSnap = await getDoc(doc(db, "requests", requestId));[span_44](end_span)
+            [span_45](start_span)if (docSnap.exists()) {[span_45](end_span)
+                [span_46](start_span)const data = docSnap.data();[span_46](end_span)
 
-                // ใส่วันที่ปัจจุบันที่สั่งพิมพ์งาน
-                const today = new Date();
-                document.getElementById('lbl-day').innerText = today.getDate();
-                document.getElementById('lbl-month').innerText = today.toLocaleString('th-TH', { month: 'long' });
-                document.getElementById('lbl-year').innerText = today.getFullYear() + 543;
+                [span_47](start_span)const today = new Date();[span_47](end_span)
+                [span_48](start_span)document.getElementById('lbl-day').innerText = today.getDate();[span_48](end_span)
+                [span_49](start_span)document.getElementById('lbl-month').innerText = today.toLocaleString('th-TH', { month: 'long' });[span_49](end_span)
+                [span_50](start_span)document.getElementById('lbl-year').innerText = today.getFullYear() + 543;[span_50](end_span)
 
-                // หยอดข้อมูลผู้ปกครองและนักเรียน
-                document.getElementById('pdf-parent-name').innerText = `${data.parentTitle || ''}${data.parentName || ''}`;
-                document.getElementById('pdf-parent-sub').innerText = `${data.parentTitle || ''}${data.parentName || ''}`;
-                document.getElementById('pdf-student-name').innerText = `${data.studentTitle || ''}${data.studentName || ''}`;
-                document.getElementById('pdf-grade').innerText = data.studentGrade || '';
-                document.getElementById('pdf-std-id').innerText = data.studentId || '';
-                document.getElementById('pdf-year').innerText = data.academicYear || '';
+                document.getElementById('pdf-parent-name').innerText = `${data.parentTitle || ''}${data.parentName || [span_51](start_span)''}`;[span_51](end_span)
+                document.getElementById('pdf-parent-sub').innerText = `${data.parentTitle || ''}${data.parentName || [span_52](start_span)''}`;[span_52](end_span)
+                document.getElementById('pdf-student-name').innerText = `${data.studentTitle || ''}${data.studentName || [span_53](start_span)''}`;[span_53](end_span)
+                document.getElementById('pdf-grade').innerText = data.studentGrade || [span_54](start_span)'';[span_54](end_span)
+                document.getElementById('pdf-std-id').innerText = data.studentId || [span_55](start_span)'';[span_55](end_span)
+                document.getElementById('pdf-year').innerText = data.academicYear || [span_56](start_span)'';[span_56](end_span)
 
-                // ติ๊กช่อง ลาออก / ย้ายออก
-                if (data.intent === "ลาออก") {
-                    document.getElementById('chk-quit').innerText = "✓";
-                } else if (data.intent === "ย้ายออก") {
-                    document.getElementById('chk-move').innerText = "✓";
+                [span_57](start_span)if (data.intent === "ลาออก") {[span_57](end_span)
+                    [span_58](start_span)document.getElementById('chk-quit').innerText = "✓";[span_58](end_span)
+                [span_59](start_span)} else if (data.intent === "ย้ายออก") {[span_59](end_span)
+                    [span_60](start_span)document.getElementById('chk-move').innerText = "✓";[span_60](end_span)
                 }
 
-                // ติ๊กช่องสาเหตุความจำเป็น
-                if (data.reasonType === "ศึกษาต่อ") {
-                    document.getElementById('chk-reason-study').innerText = "✓";
-                    document.getElementById('pdf-reason-study').innerText = data.reasonDetail || '';
-                } else if (data.reasonType === "ประกอบอาชีพ") {
-                    document.getElementById('chk-reason-job').innerText = "✓";
-                } else {
-                    document.getElementById('chk-reason-other').innerText = "✓";
-                    document.getElementById('pdf-reason-other').innerText = data.reasonDetail || '';
+                [span_61](start_span)if (data.reasonType === "ศึกษาต่อ") {[span_61](end_span)
+                    [span_62](start_span)document.getElementById('chk-reason-study').innerText = "✓";[span_62](end_span)
+                    document.getElementById('pdf-reason-study').innerText = data.reasonDetail || [span_63](start_span)'';[span_63](end_span)
+                [span_64](start_span)} else if (data.reasonType === "ประกอบอาชีพ") {[span_64](end_span)
+                    [span_65](start_span)document.getElementById('chk-reason-job').innerText = "✓";[span_65](end_span)
+                [span_66](start_span)} else {[span_66](end_span)
+                    [span_67](start_span)document.getElementById('chk-reason-other').innerText = "✓";[span_67](end_span)
+                    document.getElementById('pdf-reason-other').innerText = data.reasonDetail || [span_68](start_span)'';[span_68](end_span)
                 }
 
-                // แปะลายเซ็นอิเล็กทรอนิกส์ผู้ปกครอง (ถ้ามี)
-                if (data.parentSignature) {
-                    const pSig = document.getElementById('img-parent-sig');
-                    pSig.src = data.parentSignature;
-                    pSig.style.display = "block";
+                [span_69](start_span)if (data.parentSignature) {[span_69](end_span)
+                    [span_70](start_span)const pSig = document.getElementById('img-parent-sig');[span_70](end_span)
+                    [span_71](start_span)pSig.src = data.parentSignature;[span_71](end_span)
+                    [span_72](start_span)pSig.style.display = "block";[span_72](end_span)
                 }
 
-                // แปะสิทธิ์ลายเซ็น ผอ. กรณีอนุมัติ/ไม่อนุมัติเรียบร้อยแล้ว
-                if (data.status === "เสร็จสิ้น" && data.directorSignature) {
-                    const dSig = document.getElementById('img-director-sig');
-                    dSig.src = data.directorSignature;
-                    dSig.style.display = "block";
+                [span_73](start_span)if (data.status === "เสร็จสิ้น" && data.directorSignature) {[span_73](end_span)
+                    [span_74](start_span)const dSig = document.getElementById('img-director-sig');[span_74](end_span)
+                    [span_75](start_span)dSig.src = data.directorSignature;[span_75](end_span)
+                    [span_76](start_span)dSig.style.display = "block";[span_76](end_span)
                     
-                    if (data.directorApproval === "approved") {
-                        document.getElementById('chk-dir-approve').innerText = "✓";
-                    } else {
-                        document.getElementById('chk-dir-disapprove').innerText = "✓";
+                    [span_77](start_span)if (data.directorApproval === "approved") {[span_77](end_span)
+                        [span_78](start_span)document.getElementById('chk-dir-approve').innerText = "✓";[span_78](end_span)
+                    [span_79](start_span)} else {[span_79](end_span)
+                        [span_80](start_span)document.getElementById('chk-dir-disapprove').innerText = "✓";[span_80](end_span)
                     }
                 }
 
-                // หน่วงเวลา 1 วินาทีให้รูปภาพลายเซ็นโหลดขึ้นมาให้ครบถ้วนก่อนสั่งปริ้นอัตโนมัติ
-                setTimeout(() => {
-                    window.print();
-                }, 1000);
+                [span_81](start_span)setTimeout(() => {[span_81](end_span)
+                    [span_82](start_span)window.print();[span_82](end_span)
+                [span_83](start_span)}, 1000);[span_83](end_span)
 
-            } else {
-                alert("ไม่พบข้อมูลคำร้องชุดนี้ในระบบฐานข้อมูล");
+            [span_84](start_span)} else {[span_84](end_span)
+                [span_85](start_span)alert("ไม่พบข้อมูลคำร้องชุดนี้ในระบบฐานข้อมูล");[span_85](end_span)
             }
-        } catch (error) {
-            console.error("การโหลดพิมพ์ผิดพลาด:", error);
+        [span_86](start_span)} catch (error) {[span_86](end_span)
+            [span_87](start_span)console.error("การโหลดพิมพ์ผิดพลาด:", error);[span_87](end_span)
         }
     });
 </script>
