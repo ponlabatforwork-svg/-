@@ -1,1 +1,92 @@
+/* ==========================================================================
+   style.css - สำหรับจัดหน้าพิมพ์เอกสารราชการครุฑ (Print Stylesheet)
+   ========================================================================== */
 
+@import url('https://fonts.googleapis.com/css2?family=Sarabun:wght@400;600;700&display=swap');
+
+body {
+    font-family: 'Sarabun', sans-serif;
+    font-size: 16pt;
+    color: #000;
+    line-height: 1.6;
+    margin: 0;
+    padding: 0;
+    background-color: #fafafa;
+}
+
+.page-container {
+    width: 21cm;
+    min-height: 29.7cm;
+    padding: 2.5cm 2cm 2.5cm 3cm; /* บน 2.5, ขวา 2, ล่าง 2.5, ซ้าย 3 ซม. */
+    margin: 1cm auto;
+    background: white;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    box-sizing: border-box;
+    position: relative;
+}
+
+.garuda-icon {
+    display: block;
+    height: 3cm; /* บังคับครุฑสูง 3 ซม. */
+    width: auto;
+    margin: 0 auto 0.5cm auto;
+    object-fit: contain;
+}
+
+.doc-title {
+    text-align: center;
+    font-size: 18pt;
+    font-weight: bold;
+    margin-bottom: 1cm;
+}
+
+.text-right { text-align: right; }
+.text-center { text-align: center; }
+.indent { text-indent: 2.5cm; }
+.flex-row { display: flex; flex-wrap: wrap; margin-bottom: 0.3cm; }
+.dotted-line { flex: 1; border-bottom: 1px dotted #000; margin-left: 5px; padding-left: 10px; font-weight: bold; }
+
+.checkbox-group { display: inline-flex; align-items: center; margin-right: 15px; }
+.checkbox-box { width: 14pt; height: 14pt; border: 1px solid #000; margin-right: 8px; display: inline-block; text-align: center; line-height: 14pt; font-weight: bold; }
+
+.footer-sections {
+    margin-top: 1cm;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+}
+
+.section-box {
+    border: 1px solid #000;
+    padding: 15px;
+    font-size: 14pt;
+    line-height: 1.5;
+}
+
+.sig-wrap {
+    text-align: center;
+    margin-top: 0.5cm;
+    position: relative;
+}
+
+.sig-img {
+    max-height: 40px;
+    display: block;
+    margin: 0 auto -10px auto;
+}
+
+/* ควบคุมตอนกดสั่งปริ้น */
+@media print {
+    body { background: none; }
+    .page-container {
+        margin: 0;
+        box-shadow: none;
+        padding: 2.5cm 2cm 2.5cm 3cm;
+        width: 100%;
+        height: auto;
+    }
+    @page {
+        size: A4 portrait;
+        margin: 0;
+    }
+}
