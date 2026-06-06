@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>แบบฟอร์มขอย้ายออก/ลาออก</title>
+    <title>แบบคำร้องขอย้ายออก/ลาออกจากสถานศึกษา</title>
     
     <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -13,388 +13,400 @@
 
     <style>
         :root {
-            --primary-color: #2c3e50;
-            --border-color: #cbd5e1;
-            --bg-color: #f8fafc;
+            --primary: #2c3e50;
+            --bg-color: #e2e8f0;
         }
         body {
             font-family: 'Sarabun', sans-serif;
             background-color: var(--bg-color);
-            color: #333;
-            line-height: 1.6;
             margin: 0;
             padding: 20px;
+            color: #000;
+            font-size: 16pt; /* ขนาดตัวอักษรมาตรฐานเอกสารราชการ */
+            line-height: 1.5;
         }
-        .container {
-            max-width: 800px;
-            margin: 0 auto;
+
+        /* --- แผงควบคุมด้านบน (ไม่แสดงตอนพิมพ์) --- */
+        .controls {
+            max-width: 210mm;
+            margin: 0 auto 20px auto;
             background: #fff;
-            padding: 40px;
+            padding: 15px;
             border-radius: 8px;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-        }
-        h2 {
-            text-align: center;
-            color: var(--primary-color);
-            margin-bottom: 30px;
-            font-weight: 600;
-        }
-        .section-title {
-            font-size: 1.2rem;
-            border-bottom: 2px solid var(--primary-color);
-            padding-bottom: 5px;
-            margin-top: 30px;
-            margin-bottom: 15px;
-            font-weight: 500;
-        }
-        .form-group {
-            margin-bottom: 15px;
-        }
-        .form-row {
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
             display: flex;
-            gap: 15px;
+            justify-content: space-between;
+            align-items: center;
         }
-        .form-col {
-            flex: 1;
-        }
-        label {
-            display: block;
-            margin-bottom: 5px;
-            font-weight: 500;
-        }
-        input[type="text"], select, textarea {
-            width: 100%;
-            padding: 8px 12px;
-            border: 1px solid var(--border-color);
-            border-radius: 4px;
+        .role-btn {
+            padding: 8px 15px;
+            border: 1px solid var(--primary);
+            background: transparent;
+            border-radius: 20px;
+            cursor: pointer;
             font-family: 'Sarabun', sans-serif;
-            font-size: 1rem;
+            font-size: 14pt;
+        }
+        .role-btn.active {
+            background: var(--primary);
+            color: #fff;
+        }
+        .action-btn {
+            padding: 8px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-family: 'Sarabun', sans-serif;
+            font-size: 14pt;
+            color: white;
+            transition: 0.3s;
+        }
+        .btn-submit { background-color: #3498db; }
+        .btn-save { background-color: #27ae60; }
+        .btn-pdf { background-color: #e74c3c; }
+        .btn-pdf:disabled { background-color: #95a5a6; cursor: not-allowed; }
+
+        /* --- หน้ากระดาษ A4 --- */
+        .a4-page {
+            width: 210mm;
+            min-height: 297mm;
+            margin: 0 auto;
+            background: white;
+            padding: 20mm 25mm 20mm 25mm; /* ขอบกระดาษ */
+            box-shadow: 0 0 10px rgba(0,0,0,0.2);
             box-sizing: border-box;
-        }
-        input[type="text"]:focus, select:focus, textarea:focus {
-            outline: none;
-            border-color: var(--primary-color);
-        }
-        .radio-group {
-            display: flex;
-            gap: 20px;
-            margin-top: 5px;
-        }
-        .hidden {
-            display: none;
-        }
-        .signature-container {
-            border: 1px dashed var(--border-color);
-            background: #fafafa;
-            margin-top: 10px;
             position: relative;
         }
+
+        /* --- การตกแต่งฟอร์มในหน้ากระดาษ --- */
+        .text-center { text-align: center; }
+        .text-right { text-align: right; }
+        .mt-1 { margin-top: 10px; }
+        .mt-2 { margin-top: 20px; }
+        .mt-4 { margin-top: 40px; }
+        .mb-2 { margin-bottom: 20px; }
+        
+        /* ช่องกรอกข้อความแบบเส้นประ */
+        .inline-input {
+            border: none;
+            border-bottom: 1px dotted #000;
+            background: transparent;
+            font-family: 'Sarabun', sans-serif;
+            font-size: 16pt;
+            color: #000;
+            padding: 0 5px;
+            outline: none;
+            text-align: center;
+        }
+        select.inline-input {
+            appearance: none;
+            -webkit-appearance: none;
+            cursor: pointer;
+        }
+        
+        .flex-row {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            margin-bottom: 5px;
+        }
+        
+        /* Checkbox แบบทางการ */
+        .check-group {
+            display: flex;
+            align-items: center;
+            margin-right: 20px;
+            cursor: pointer;
+        }
+        .check-group input[type="radio"], .check-group input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            margin-right: 8px;
+            cursor: pointer;
+        }
+
+        /* ตราครุฑจำลอง */
+        .garuda {
+            width: 60px;
+            height: auto;
+            margin: 0 auto 10px auto;
+            display: block;
+        }
+
+        /* กล่องลายเซ็น */
+        .sig-box {
+            display: inline-block;
+            text-align: center;
+            margin-top: 20px;
+        }
+        .canvas-container {
+            border: 1px dashed #ccc;
+            background: #fafafa;
+            position: relative;
+            margin-bottom: 5px;
+        }
         canvas {
-            width: 100%;
-            height: 150px;
+            width: 200px;
+            height: 80px;
             cursor: crosshair;
         }
         .btn-clear {
             position: absolute;
-            top: 5px;
-            right: 5px;
+            top: 2px;
+            right: 2px;
+            font-size: 10pt;
             background: #e2e8f0;
             border: none;
-            padding: 2px 8px;
-            border-radius: 4px;
             cursor: pointer;
-            font-size: 0.8rem;
+            padding: 2px 5px;
         }
-        .btn {
-            background-color: var(--primary-color);
-            color: #fff;
-            border: none;
-            padding: 10px 20px;
-            font-family: 'Sarabun', sans-serif;
-            font-size: 1rem;
-            border-radius: 4px;
-            cursor: pointer;
-            width: 100%;
-            margin-top: 20px;
-            transition: 0.3s;
+
+        /* โครงสร้างส่วนล่าง (ครู & ผอ.) */
+        .bottom-section {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 30px;
         }
-        .btn:hover {
-            background-color: #1a252f;
+        .half-col {
+            width: 48%;
         }
-        .btn-danger { background-color: #e74c3c; }
-        .btn-danger:hover { background-color: #c0392b; }
-        .btn-success { background-color: #27ae60; }
-        .btn-success:hover { background-color: #2ecc71; }
-        
-        /* Roles Switcher for Mockup */
-        .role-switcher {
-            text-align: center;
-            margin-bottom: 20px;
-        }
-        .role-switcher button {
-            margin: 0 5px;
-            padding: 5px 15px;
-            border-radius: 20px;
-            border: 1px solid var(--primary-color);
-            background: transparent;
-            cursor: pointer;
-        }
-        .role-switcher button.active {
-            background: var(--primary-color);
-            color: #fff;
-        }
+
+        .hidden { display: none !important; }
     </style>
 </head>
 <body>
 
-    <div class="role-switcher">
-        <button id="btnRoleParent" class="active" onclick="switchRole('parent')"><i class="fas fa-user"></i> ผู้ปกครอง/นักเรียน</button>
-        <button id="btnRoleDirector" onclick="switchRole('director')"><i class="fas fa-user-tie"></i> ผู้อำนวยการ</button>
+    <div class="controls" id="controlPanel">
+        <div>
+            <button id="btnRoleParent" class="role-btn active" onclick="switchRole('parent')"><i class="fas fa-user"></i> ผู้ปกครอง</button>
+            <button id="btnRoleDirector" class="role-btn" onclick="switchRole('director')"><i class="fas fa-user-tie"></i> ผู้อำนวยการ</button>
+        </div>
+        <div>
+            <button id="btnSubmit" class="action-btn btn-submit" onclick="submitForm()"><i class="fas fa-paper-plane"></i> ส่งคำร้อง</button>
+            <button id="btnSaveDir" class="action-btn btn-save hidden" onclick="saveDirectorDecision()"><i class="fas fa-save"></i> บันทึกผล</button>
+            <button id="btnDownload" class="action-btn btn-pdf" onclick="generatePDF()" disabled><i class="fas fa-file-pdf"></i> พิมพ์ PDF</button>
+        </div>
     </div>
 
-    <div class="container" id="pdfContent">
-        <h2><i class="fas fa-file-alt"></i> แบบคำร้องขอย้ายออก/ลาออก</h2>
-        
-        <form id="resignationForm">
-            <div class="section-title"><i class="fas fa-user-friends"></i> ข้อมูลผู้ปกครอง</div>
-            <div class="form-row">
-                <div class="form-col" style="flex: 0.3;">
-                    <label>คำนำหน้า</label>
-                    <select id="parentPrefix" required>
-                        <option value="">เลือก</option>
-                        <option value="นาย">นาย</option>
-                        <option value="นาง">นาง</option>
-                        <option value="นางสาว">นางสาว</option>
-                    </select>
+    <div class="a4-page" id="documentContent">
+        <div class="text-center">
+            <i class="fas fa-chess-king" style="font-size: 40px; color: #333; margin-bottom: 10px;"></i>
+        </div>
+        <div class="text-center mb-2" style="font-weight: bold; font-size: 18pt;">
+            แบบคำร้องขอย้ายออก/ลาออกจากสถานศึกษา
+        </div>
+
+        <div class="flex-row" style="justify-content: flex-end;">
+            เขียนที่ <input type="text" class="inline-input" style="width: 200px;" id="writeAt" value="โรงเรียน.........................">
+        </div>
+        <div class="flex-row" style="justify-content: flex-end;">
+            วันที่ <input type="text" class="inline-input" style="width: 40px;" placeholder="......."> 
+            เดือน <input type="text" class="inline-input" style="width: 100px;" placeholder=".................."> 
+            พ.ศ. <input type="text" class="inline-input" style="width: 60px;" placeholder="...........">
+        </div>
+
+        <div class="mt-2">
+            <div><strong>เรียน</strong> ผู้อำนวยการโรงเรียน</div>
+            <div><strong>เรื่อง</strong> ขอย้ายออก/ลาออกจากสถานศึกษา</div>
+        </div>
+
+        <div class="mt-2" style="text-indent: 50px;">
+            ข้าพเจ้า 
+            <select class="inline-input" id="parentPrefix">
+                <option value="">(เลือกคำนำหน้า)</option>
+                <option value="นาย">นาย</option>
+                <option value="นาง">นาง</option>
+                <option value="นางสาว">นางสาว</option>
+            </select>
+            <input type="text" class="inline-input" style="width: 250px;" id="parentName" placeholder="ชื่อ - สกุล ผู้ปกครอง">
+        </div>
+        <div class="mt-1">
+            เป็นผู้ปกครองของ 
+            <select class="inline-input" id="studentPrefix">
+                <option value="">(เลือกคำนำหน้า)</option>
+                <option value="เด็กชาย">เด็กชาย</option>
+                <option value="เด็กหญิง">เด็กหญิง</option>
+                <option value="นาย">นาย</option>
+                <option value="นางสาว">นางสาว</option>
+            </select>
+            <input type="text" class="inline-input" style="width: 250px;" id="studentName" placeholder="ชื่อ - สกุล นักเรียน">
+        </div>
+        <div class="mt-1 flex-row">
+            นักเรียนระดับชั้นมัธยมศึกษาปีที่ <input type="text" class="inline-input" style="width: 50px;" id="studentLevel">
+            เลขประจำตัวนักเรียน <input type="text" class="inline-input" style="width: 120px;" id="studentId">
+            ปีการศึกษา <input type="text" class="inline-input" style="width: 80px;" id="academicYear">
+        </div>
+
+        <div class="mt-2">
+            มีความประสงค์จะขอ
+            <div class="flex-row mt-1" style="margin-left: 50px;">
+                <label class="check-group"><input type="radio" name="intent" value="ลาออก"> ลาออก</label>
+                <label class="check-group"><input type="radio" name="intent" value="ย้ายออก"> ย้ายออก</label>
+            </div>
+        </div>
+
+        <div class="mt-2">
+            เนื่องด้วยมีความจำเป็นดังต่อไปนี้
+            <div class="flex-row mt-1" style="margin-left: 50px;">
+                <label class="check-group"><input type="radio" name="reason" value="ศึกษาต่อ"> ไปศึกษาต่อที่</label>
+                <input type="text" class="inline-input" style="width: 250px;" id="reasonStudy" placeholder="ระบุชื่อสถานศึกษา">
+            </div>
+            <div class="flex-row mt-1" style="margin-left: 50px;">
+                <label class="check-group"><input type="radio" name="reason" value="ประกอบอาชีพ"> ไปประกอบอาชีพ</label>
+            </div>
+            <div class="flex-row mt-1" style="margin-left: 50px;">
+                <label class="check-group"><input type="radio" name="reason" value="อื่นๆ"> อื่นๆ (ระบุ)</label>
+                <input type="text" class="inline-input" style="width: 300px;" id="reasonOther" placeholder="...">
+            </div>
+        </div>
+
+        <div class="text-right mt-4" style="margin-right: 50px;">
+            ขอแสดงความนับถือ
+        </div>
+
+        <div class="text-right" style="margin-right: 20px;">
+            <div class="sig-box">
+                <div class="canvas-container">
+                    <button class="btn-clear no-print" onclick="parentPad.clear()"><i class="fas fa-undo"></i></button>
+                    <canvas id="parentSignature"></canvas>
                 </div>
-                <div class="form-col">
-                    <label>ชื่อ-สกุล</label>
-                    <input type="text" id="parentName" placeholder="กรอกชื่อและนามสกุล" required>
-                </div>
+                <div>(ลงชื่อ) <input type="text" class="inline-input" style="width: 150px;" placeholder="ชื่อตัวบรรจง"> ผู้ปกครอง</div>
+            </div>
+        </div>
+
+        <div class="bottom-section">
+            <div class="half-col" style="border: 1px solid #000; padding: 10px;">
+                <div class="text-center" style="font-weight: bold;">ความคิดเห็นคุณครูที่ปรึกษา</div>
+                <div class="mt-1">ครูที่ปรึกษาคนที่ ๑</div>
+                <input type="text" class="inline-input" style="width: 100%; margin-bottom: 10px;">
+                <div class="mt-1">ครูที่ปรึกษาคนที่ ๒</div>
+                <input type="text" class="inline-input" style="width: 100%;">
             </div>
 
-            <div class="section-title"><i class="fas fa-user-graduate"></i> ข้อมูลนักเรียน</div>
-            <div class="form-row">
-                <div class="form-col" style="flex: 0.3;">
-                    <label>คำนำหน้า</label>
-                    <select id="studentPrefix" required>
-                        <option value="">เลือก</option>
-                        <option value="เด็กชาย">เด็กชาย</option>
-                        <option value="เด็กหญิง">เด็กหญิง</option>
-                        <option value="นาย">นาย</option>
-                        <option value="นางสาว">นางสาว</option>
-                    </select>
+            <div class="half-col" style="border: 1px solid #000; padding: 10px; position: relative;" id="directorSection">
+                <div id="directorOverlay" style="position: absolute; top:0; left:0; width:100%; height:100%; background:rgba(255,255,255,0.7); z-index: 10;"></div>
+                
+                <div class="text-center" style="font-weight: bold;">ผู้อำนวยการสถานศึกษา</div>
+                <div class="flex-row mt-1" style="justify-content: center;">
+                    <label class="check-group"><input type="radio" name="directorApprove" value="อนุมัติ"> อนุมัติ</label>
+                    <label class="check-group"><input type="radio" name="directorApprove" value="ไม่อนุมัติ"> ไม่อนุมัติ</label>
                 </div>
-                <div class="form-col">
-                    <label>ชื่อ-สกุล</label>
-                    <input type="text" id="studentName" placeholder="กรอกชื่อและนามสกุล" required>
-                </div>
-            </div>
-            <div class="form-row">
-                <div class="form-col">
-                    <label>ชั้นมัธยมศึกษาปีที่</label>
-                    <select id="studentClass" required>
-                        <option value="">เลือกชั้นปี</option>
-                        <option value="1">1</option>
-                        <option value="2">2</option>
-                        <option value="3">3</option>
-                        <option value="4">4</option>
-                        <option value="5">5</option>
-                        <option value="6">6</option>
-                    </select>
-                </div>
-                <div class="form-col">
-                    <label>เลขประจำตัวนักเรียน</label>
-                    <input type="text" id="studentId" required>
-                </div>
-                <div class="form-col">
-                    <label>ปีการศึกษา</label>
-                    <input type="text" id="academicYear" required>
-                </div>
-            </div>
-
-            <div class="section-title"><i class="fas fa-clipboard-check"></i> ความประสงค์</div>
-            <div class="form-group">
-                <div class="radio-group">
-                    <label><input type="radio" name="intent" value="ลาออก" required> ลาออก</label>
-                    <label><input type="radio" name="intent" value="ย้ายออก"> ย้ายออก</label>
-                </div>
-            </div>
-
-            <div class="form-group">
-                <label>เนื่องจาก (ความจำเป็น)</label>
-                <div class="radio-group" onchange="handleReasonChange()">
-                    <label><input type="radio" name="reasonType" value="ไปศึกษาต่อที่" required> ไปศึกษาต่อที่</label>
-                    <label><input type="radio" name="reasonType" value="ไปประกอบอาชีพ"> ไปประกอบอาชีพ</label>
-                    <label><input type="radio" name="reasonType" value="อื่นๆ"> อื่นๆ</label>
-                </div>
-                <input type="text" id="reasonDetail" class="hidden" placeholder="โปรดระบุรายละเอียดเพิ่มเติม..." style="margin-top: 10px;">
-            </div>
-
-            <div class="section-title"><i class="fas fa-comments"></i> ความคิดเห็นครูที่ปรึกษา</div>
-            <div class="form-row">
-                <div class="form-col">
-                    <label>ครูที่ปรึกษาคนที่ ๑</label>
-                    <textarea id="advisor1Comment" rows="2" placeholder="ความคิดเห็น..."></textarea>
-                </div>
-                <div class="form-col">
-                    <label>ครูที่ปรึกษาคนที่ ๒</label>
-                    <textarea id="advisor2Comment" rows="2" placeholder="ความคิดเห็น..."></textarea>
-                </div>
-            </div>
-
-            <div class="section-title"><i class="fas fa-signature"></i> ลงชื่อผู้ปกครอง</div>
-            <div class="signature-container">
-                <button type="button" class="btn-clear" onclick="parentPad.clear()">ล้างลายเซ็น</button>
-                <canvas id="parentSignature"></canvas>
-            </div>
-
-            <div id="directorSection" class="hidden">
-                <div class="section-title"><i class="fas fa-stamp"></i> การพิจารณาของผู้อำนวยการโรงเรียน</div>
-                <div class="form-group">
-                    <div class="radio-group">
-                        <label><input type="radio" name="directorDecision" value="อนุมัติ"> อนุมัติ</label>
-                        <label><input type="radio" name="directorDecision" value="ไม่อนุมัติ"> ไม่อนุมัติ</label>
+                
+                <div class="text-center mt-1">
+                    <div class="sig-box" style="margin-top: 5px;">
+                        <div class="canvas-container">
+                            <button class="btn-clear no-print" onclick="directorPad.clear()"><i class="fas fa-undo"></i></button>
+                            <canvas id="directorSignature"></canvas>
+                        </div>
+                        <div style="font-size: 14pt;">(ลงชื่อ) ผู้อำนวยการสถานศึกษา</div>
+                        <div style="font-size: 14pt;">(ลงวันที่) <input type="text" class="inline-input" style="width: 100px;"></div>
                     </div>
                 </div>
-                <label>ลงชื่อผู้อำนวยการ</label>
-                <div class="signature-container">
-                    <button type="button" class="btn-clear" onclick="directorPad.clear()">ล้างลายเซ็น</button>
-                    <canvas id="directorSignature"></canvas>
-                </div>
             </div>
-
-            <div id="parentActions">
-                <button type="submit" class="btn"><i class="fas fa-paper-plane"></i> ส่งคำร้อง</button>
-            </div>
-            
-            <div id="directorActions" class="hidden form-row" style="margin-top: 20px;">
-                <button type="button" class="btn btn-success" onclick="saveDirectorDecision()"><i class="fas fa-save"></i> บันทึกการพิจารณา</button>
-                <button type="button" class="btn btn-danger" onclick="downloadPDF()" id="btnDownloadPdf" disabled><i class="fas fa-file-pdf"></i> พิมพ์ PDF</button>
-            </div>
-        </form>
+        </div>
     </div>
 
     <script>
-        // Setup Signature Pads
-        const parentCanvas = document.getElementById('parentSignature');
-        const directorCanvas = document.getElementById('directorSignature');
-        const parentPad = new SignaturePad(parentCanvas);
-        const directorPad = new SignaturePad(directorCanvas);
-
-        // Fix canvas scaling for retina displays
+        // กำหนด Signature Pad
+        const canvasParent = document.getElementById('parentSignature');
+        const canvasDirector = document.getElementById('directorSignature');
+        
         function resizeCanvas(canvas) {
-            const ratio =  Math.max(window.devicePixelRatio || 1, 1);
+            const ratio = Math.max(window.devicePixelRatio || 1, 1);
             canvas.width = canvas.offsetWidth * ratio;
             canvas.height = canvas.offsetHeight * ratio;
             canvas.getContext("2d").scale(ratio, ratio);
         }
-        window.addEventListener("resize", () => { resizeCanvas(parentCanvas); resizeCanvas(directorCanvas); });
-        resizeCanvas(parentCanvas);
-        resizeCanvas(directorCanvas);
+        
+        resizeCanvas(canvasParent);
+        resizeCanvas(canvasDirector);
 
-        // จัดการช่องแสดงเหตุผลเพิ่มเติม
-        function handleReasonChange() {
-            const radios = document.getElementsByName('reasonType');
-            const detailInput = document.getElementById('reasonDetail');
-            detailInput.classList.remove('hidden');
-            detailInput.required = true;
+        const parentPad = new SignaturePad(canvasParent, { penColor: "blue" });
+        const directorPad = new SignaturePad(canvasDirector, { penColor: "blue" });
+
+        // การสลับ Role
+        function switchRole(role) {
+            document.getElementById('btnRoleParent').classList.remove('active');
+            document.getElementById('btnRoleDirector').classList.remove('active');
+
+            const dirOverlay = document.getElementById('directorOverlay');
             
-            for(let radio of radios) {
-                if(radio.checked) {
-                    detailInput.placeholder = `โปรดระบุรายละเอียด (${radio.value})...`;
-                    break;
-                }
+            if (role === 'parent') {
+                document.getElementById('btnRoleParent').classList.add('active');
+                document.getElementById('btnSubmit').classList.remove('hidden');
+                document.getElementById('btnSaveDir').classList.add('hidden');
+                dirOverlay.style.display = 'block'; // บล็อคส่วนผอ.
+            } else {
+                document.getElementById('btnRoleDirector').classList.add('active');
+                document.getElementById('btnSubmit').classList.add('hidden');
+                document.getElementById('btnSaveDir').classList.remove('hidden');
+                dirOverlay.style.display = 'none'; // เปิดให้ผอ.ใช้งาน
             }
         }
 
-        // Parent Submit
-        document.getElementById('resignationForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            if (parentPad.isEmpty()) {
-                Swal.fire({ icon: 'warning', title: 'กรุณาลงลายมือชื่อ', text: 'ผู้ปกครองต้องลงลายเซ็นก่อนส่งคำร้อง', confirmButtonColor: '#2c3e50' });
+        // ส่งคำร้อง (ผู้ปกครอง)
+        function submitForm() {
+            if(parentPad.isEmpty()) {
+                Swal.fire('แจ้งเตือน', 'กรุณาลงลายมือชื่อผู้ปกครอง', 'warning');
                 return;
             }
-
-            // Simulate saving to database
             Swal.fire({
                 title: 'ยืนยันการส่งคำร้อง?',
-                text: "ข้อมูลจะถูกส่งไปยังผู้อำนวยการโรงเรียน",
                 icon: 'question',
                 showCancelButton: true,
-                confirmButtonColor: '#2c3e50',
-                cancelButtonColor: '#e74c3c',
-                confirmButtonText: 'ใช่, ส่งคำร้อง!',
+                confirmButtonText: 'ส่งคำร้อง',
                 cancelButtonText: 'ยกเลิก'
             }).then((result) => {
                 if (result.isConfirmed) {
-                    Swal.fire({ icon: 'success', title: 'ส่งคำร้องสำเร็จ', text: 'รอการพิจารณาจากผู้อำนวยการ', confirmButtonColor: '#2c3e50' });
-                    // จำลองการปลดล็อค Role
-                    localStorage.setItem('formSubmitted', 'true');
+                    Swal.fire('สำเร็จ!', 'ส่งคำร้องให้ผู้อำนวยการเรียบร้อยแล้ว', 'success');
                 }
             });
-        });
+        }
 
-        // Director Save Decision
+        // บันทึกผล (ผู้อำนวยการ)
         function saveDirectorDecision() {
-            const decision = document.querySelector('input[name="directorDecision"]:checked');
-            if (!decision) {
-                Swal.fire({ icon: 'warning', title: 'ข้อมูลไม่ครบ', text: 'กรุณาเลือก อนุมัติ หรือ ไม่อนุมัติ', confirmButtonColor: '#2c3e50' });
+            const decision = document.querySelector('input[name="directorApprove"]:checked');
+            if(!decision) {
+                Swal.fire('แจ้งเตือน', 'กรุณาเลือก อนุมัติ หรือ ไม่อนุมัติ', 'warning');
                 return;
             }
-            if (directorPad.isEmpty()) {
-                Swal.fire({ icon: 'warning', title: 'กรุณาลงลายมือชื่อ', text: 'ผู้อำนวยการต้องลงลายเซ็น', confirmButtonColor: '#2c3e50' });
+            if(directorPad.isEmpty()) {
+                Swal.fire('แจ้งเตือน', 'กรุณาลงลายมือชื่อผู้อำนวยการ', 'warning');
                 return;
             }
 
-            if (decision.value === 'อนุมัติ') {
-                Swal.fire({ icon: 'success', title: 'บันทึกสำเร็จ', text: 'คำร้องถูกอนุมัติ สามารถพิมพ์ PDF ได้แล้ว', confirmButtonColor: '#2c3e50' });
-                document.getElementById('btnDownloadPdf').disabled = false;
+            if(decision.value === 'อนุมัติ') {
+                Swal.fire('สำเร็จ!', 'อนุมัติคำร้องเรียบร้อย สามารถพิมพ์ PDF ได้', 'success');
+                document.getElementById('btnDownload').disabled = false;
             } else {
-                Swal.fire({ icon: 'error', title: 'บันทึกสำเร็จ', text: 'คำร้องไม่อนุมัติ (ไม่สามารถพิมพ์ PDF ได้)', confirmButtonColor: '#2c3e50' });
-                document.getElementById('btnDownloadPdf').disabled = true;
+                Swal.fire('บันทึกผล', 'ไม่อนุมัติคำร้อง', 'error');
+                document.getElementById('btnDownload').disabled = true;
             }
         }
 
-        // Generate PDF
-        function downloadPDF() {
-            // ซ่อนปุ่มต่างๆ ก่อนพิมพ์
-            const elementsToHide = document.querySelectorAll('.btn, .btn-clear, .role-switcher');
-            elementsToHide.forEach(el => el.style.display = 'none');
+        // สร้าง PDF
+        function generatePDF() {
+            // ซ่อนปุ่มล้างลายเซ็นและกรอบก่อนพิมพ์
+            const clears = document.querySelectorAll('.no-print');
+            const canvases = document.querySelectorAll('.canvas-container');
+            clears.forEach(btn => btn.style.display = 'none');
+            canvases.forEach(c => c.style.border = 'none');
 
-            const element = document.getElementById('pdfContent');
+            // ใช้ html2pdf เพื่อจับภาพหน้า A4
+            const element = document.getElementById('documentContent');
             const opt = {
-                margin:       10,
-                filename:     'แบบฟอร์มขอย้ายออก.pdf',
+                margin:       0,
+                filename:     'แบบคำร้องขอย้ายออก_ลาออก.pdf',
                 image:        { type: 'jpeg', quality: 0.98 },
                 html2canvas:  { scale: 2, useCORS: true },
                 jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
             };
 
-            // สร้าง PDF
             html2pdf().set(opt).from(element).save().then(() => {
-                // คืนค่าการแสดงผลปุ่ม
-                elementsToHide.forEach(el => el.style.display = '');
+                // คืนค่า UI กลับมาหลังพิมพ์เสร็จ
+                clears.forEach(btn => btn.style.display = '');
+                canvases.forEach(c => c.style.border = '1px dashed #ccc');
             });
-        }
-
-        // Mockup Role Switcher Logic
-        function switchRole(role) {
-            document.getElementById('btnRoleParent').classList.remove('active');
-            document.getElementById('btnRoleDirector').classList.remove('active');
-
-            if (role === 'parent') {
-                document.getElementById('btnRoleParent').classList.add('active');
-                document.getElementById('directorSection').classList.add('hidden');
-                document.getElementById('directorActions').classList.add('hidden');
-                document.getElementById('parentActions').classList.remove('hidden');
-            } else {
-                document.getElementById('btnRoleDirector').classList.add('active');
-                document.getElementById('directorSection').classList.remove('hidden');
-                document.getElementById('directorActions').classList.remove('hidden');
-                document.getElementById('parentActions').classList.add('hidden');
-                resizeCanvas(directorCanvas); // Resize when unhidden
-            }
         }
     </script>
 </body>
