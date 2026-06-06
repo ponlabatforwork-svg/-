@@ -1,5 +1,5 @@
 /* ==========================================================================
-   style.css - สำหรับจัดข้อความวางบนเส้นตามรูปแบบหนังสือราชการไทยอย่างเป็นระเบียบ
+   style.css - สำหรับจัดข้อความลอยอยู่ด้านบนเส้นจุดไข่ปลาตามระเบียบสารบรรณ
    ========================================================================== */
 
 @import url('https://fonts.googleapis.com/css2?family=Sarabun:wght@400;600;700&display=swap');
@@ -8,7 +8,7 @@ body {
     font-family: 'Sarabun', sans-serif;
     font-size: 16pt; /* ขนาดตัวอักษรมาตรฐานหนังสือราชการ */
     color: #000;
-    line-height: 1.8; /* ระยะบรรทัดเผื่อให้ข้อความอยู่บนเส้นได้อย่างสวยงาม */
+    line-height: 1.8;
     margin: 0;
     padding: 0;
     background-color: #fafafa;
@@ -24,12 +24,12 @@ body {
     box-sizing: border-box;
 }
 
-/* ตราครุฑสูง 3 ซม. ตรงตามหลักการจัดรูปแบบ */
+/* ตราครุฑสูง 3 ซม. มาตรฐาน */
 .garuda-icon {
     display: block;
     height: 3cm;
     width: auto;
-    margin: 0 auto 0.5cm auto;
+    margin: 0 auto 0.4cm auto;
     object-fit: contain;
 }
 
@@ -49,36 +49,45 @@ body {
 .text-right { text-align: right; }
 .indent { display: inline-block; width: 2.5cm; } /* ย่อหน้ามาตรฐานราชการ 2.5 ซม. */
 
-/* --- ระบบกล่องข้อความทับเส้น (Text on Line) --- */
+/* --- บล็อกแถวที่มีการผสมข้อความและช่องข้อมูล --- */
+.gov-row {
+    margin-bottom: 0.4cm;
+    text-align: justify;
+    position: relative;
+}
+
+/* --- ระบบช่องข้อมูลทับเส้น (Text OVER Dotted Line) --- */
 .line-field {
     display: inline-block;
     position: relative;
-    border-bottom: 1px dotted #000; /* เส้นประด้านล่าง */
-    text-align: center;
-    padding: 0 4px;
+    background-image: linear-gradient(to right, #000 33%, rgba(255,255,255,0) 0%);
+    background-position: bottom;
+    background-size: 3px 1px; /* สร้างเส้นจุดไข่ปลาที่คมชัด */
+    background-repeat: repeat-x;
+    height: 28px;
     vertical-align: bottom;
-    margin-bottom: -1px;
+    margin: 0 4px;
 }
 
-/* ตัวอักษรข้อมูลระบบที่จะไปลอยอยู่บนเส้น */
+/* ข้อความจาก Firebase ที่จะลอยอยู่ "ด้านบน" เส้นจุดไข่ปลาพอดี */
 .line-value {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 2px; /* ลอยอยู่เหนือเส้นประพอดี ไม่ทับเส้น */
+    text-align: center;
     font-weight: bold;
     color: #000;
-    position: relative;
-    top: -2px; /* ดึงตัวอักษรขึ้นมาลอยเหนือกองเส้นเล็กน้อยไม่ให้ทับเส้นจุด */
-}
-
-/* บล็อกจัดแถวที่มีการผสมข้อความและเส้นประ */
-.gov-row {
-    margin-bottom: 0.3cm;
-    text-align: justify;
-    word-break: break-all;
+    font-size: 16pt;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .checkbox-group { display: inline-flex; align-items: center; margin-right: 15px; }
 .checkbox-box { width: 14pt; height: 14pt; border: 1px solid #000; margin-right: 6px; display: inline-block; text-align: center; line-height: 13pt; font-weight: bold; font-size: 11pt; }
 
-/* --- โครงสร้างตารางส่วนล่างแผ่น --- */
+/* --- โครงสร้างตารางส่วนความคิดเห็นคุณครู และ ผอ. ข้างล่างแผ่น --- */
 .form-table {
     width: 100%;
     border-collapse: collapse;
@@ -127,7 +136,7 @@ body {
     margin: 0 auto -15px auto;
 }
 
-/* ควบคุมการพิมพ์จริงออกเครื่องปริ้น */
+/* ควบคุมสไตล์งานพิมพ์ออกทางเครื่องปริ้นเตอร์ */
 @media print {
     body { background: none; }
     .page-container {
