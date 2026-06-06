@@ -1,1 +1,298 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ระบบงานทะเบียน - จัดการคำร้องและข้อมูล</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;600&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdn.jsdelivr.net/npm/signature_pad@4.1.7/dist/signature_pad.umd.min.js"></script>
 
+    <style>
+        body { font-family: 'Sarabun', sans-serif; background-color: #f4f6f9; margin: 0; padding: 20px; }
+        .container { max-width: 1100px; margin: auto; background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.05); }
+        .nav-tabs { display: flex; gap: 10px; border-bottom: 2px solid #eee; margin-bottom: 20px; padding-bottom: 10px; }
+        .tab-btn { padding: 10px 20px; border: none; background: #e0e0e0; cursor: pointer; border-radius: 6px; font-family: 'Sarabun', sans-serif; font-size: 16px; }
+        .tab-btn.active { background: #2b3e50; color: white; font-weight: bold; }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+        
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 15px; }
+        th, td { border: 1px solid #ddd; padding: 12px; text-align: left; }
+        th { background-color: #2b3e50; color: white; }
+        tr:nth-child(even) { background-color: #f9f9f9; }
+        
+        .form-group { margin-bottom: 15px; }
+        label { display: block; font-weight: 600; margin-bottom: 5px; }
+        input[type="text"], input[type="password"], select { width: 100%; padding: 10px; box-sizing: border-box; border: 1px solid #ddd; border-radius: 6px; }
+        
+        .btn { padding: 8px 16px; border: none; border-radius: 4px; cursor: pointer; font-family: 'Sarabun', sans-serif; font-size: 14px; }
+        .btn-primary { background: #2b3e50; color: white; }
+        .btn-success { background: #2e7d32; color: white; }
+        .btn-danger { background: #c62828; color: white; }
+        .btn-warning { background: #f57c00; color: white; }
+        .btn-info { background: #0288d1; color: white; }
+        
+        .signature-area { border: 2px dashed #ccc; background: #fafafa; border-radius: 6px; height: 120px; }
+        canvas { width: 100%; height: 100%; }
+        .action-flex { display: flex; gap: 5px; flex-wrap: wrap; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2><i class="fa-solid fa-user-gear"></i> แผงควบคุมเจ้าหน้าที่ฝ่ายทะเบียน</h2>
+    
+    <div class="nav-tabs">
+        <button class="tab-btn active" onclick="switchTab('requests-tab')">รายการคำร้องขอย้าย/ลาออก</button>
+        <button class="tab-btn" onclick="switchTab('manage-tab')">จัดการนักเรียน & เจ้าหน้าที่</button>
+        <button class="tab-btn" onclick="switchTab('create-tab')">เพิ่มคำร้องแทน</button>
+    </div>
+
+    <div id="requests-tab" class="tab-content active">
+        <h3><i class="fa-solid fa-list-check"></i> คำร้องที่รอดำเนินการ</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>รหัสนักเรียน</th>
+                    <th>ชื่อ-สกุล นักเรียน</th>
+                    <th>ความประสงค์</th>
+                    <th>สถานะปัจจุบัน</th>
+                    <th>การจัดการสถานะ</th>
+                    <th>เอกสาร</th>
+                </tr>
+            </thead>
+            <tbody id="request-list-body">
+                </tbody>
+        </table>
+    </div>
+
+    <div id="manage-tab" class="tab-content">
+        <div style="display: flex; gap: 40px;">
+            <div style="flex: 1;">
+                <h3><i class="fa-solid fa-user-plus"></i> เพิ่มรายชื่อนักเรียน</h3>
+                <form id="add-student-form" onsubmit="addStudent(event)">
+                    <div class="form-group">
+                        <label>คำนำหน้า</label>
+                        <select id="reg-std-title" required>
+                            <option value="เด็กชาย">เด็กชาย</option>
+                            <option value="เด็กหญิง">เด็กหญิง</option>
+                            <option value="นาย">นาย</option>
+                            <option value="นางสาว">นางสาว</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>ชื่อ-สกุล</label>
+                        <input type="text" id="reg-std-name" required>
+                    </div>
+                    <div class="form-group">
+                        <label>รหัสนักเรียน</label>
+                        <input type="text" id="reg-std-id" required>
+                    </div>
+                    <div class="form-group">
+                        <label>ชั้นมัธยมศึกษาปีที่</label>
+                        <input type="text" id="reg-std-grade" placeholder="เช่น 3/1" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary">บันทึกข้อมูลนักเรียน</button>
+                </form>
+            </div>
+
+            <div style="flex: 1;">
+                <h3><i class="fa-solid fa-user-shield"></i> เพิ่มผู้ใช้งานฝ่ายทะเบียน</h3>
+                <form id="add-registrar-form" onsubmit="addRegistrar(event)">
+                    <div class="form-group">
+                        <label>ชื่อ-สกุล เจ้าหน้าที่</label>
+                        <input type="text" id="reg-user-name" required>
+                    </div>
+                    <div class="form-group">
+                        <label>ชื่อผู้ใช้ (Username)</label>
+                        <input type="text" id="reg-user-uname" required>
+                    </div>
+                    <div class="form-group">
+                        <label>รหัสผ่าน</label>
+                        <input type="password" id="reg-user-pass" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary">สร้างบัญชีเจ้าหน้าที่</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div id="create-tab" class="tab-content">
+        <h3><i class="fa-solid fa-file-pen"></i> เขียนคำร้องขอย้ายออก/ลาออก (แทนผู้ปกครอง)</h3>
+        <form id="registrar-create-form" onsubmit="createRequestByStaff(event)">
+            <div class="form-group"><label>รหัสนักเรียน</label><input type="text" id="rep-std-id" required></div>
+            <div class="form-group"><label>ชื่อผู้ปกครอง</label><input type="text" id="rep-parent-name" required></div>
+            <div class="form-group"><label>ชื่อนักเรียน</label><input type="text" id="rep-std-name" required></div>
+            <div class="form-group"><label>ชั้นมัธยมศึกษาปีที่</label><input type="text" id="rep-std-grade" required></div>
+            <div class="form-group"><label>ปีการศึกษา</label><input type="text" id="rep-year" required></div>
+            <div class="form-group">
+                <label>ความประสงค์</label>
+                <input type="radio" name="rep-intent" value="ลาออก" checked> ลาออก
+                <input type="radio" name="rep-intent" value="ย้ายออก"> ย้ายออก
+            </div>
+            <div class="form-group">
+                <label>ความจำเป็น</label>
+                <input type="text" id="rep-reason" placeholder="ระบุเหตุผลความจำเป็น" required>
+            </div>
+            <div class="form-group">
+                <label>ลงชื่อเจ้าหน้าที่ทะเบียน (ลายเซ็นอิเล็กทรอนิกส์)</label>
+                <div class="signature-area"><canvas id="registrar-sig-pad"></canvas></div>
+                <button type="button" class="btn btn-warning" onclick="clearRegSig()" style="margin-top:5px; padding:3px 10px;">ล้างลายเซ็น</button>
+            </div>
+            <button type="submit" class="btn btn-success">บันทึกและส่งต่อไปยังผู้พิจารณา</button>
+        </form>
+    </div>
+</div>
+
+<script type="module">
+    import { db, collection, setDoc, doc, onSnapshot, updateDoc } from "./js/app.js";
+
+    // จัดการระบบแท็บ
+    window.switchTab = function(tabId) {
+        document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+        document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+        document.getElementById(tabId).classList.add('active');
+        event.target.classList.add('active');
+        if(tabId === 'create-tab') { resizeCanvas(); }
+    }
+
+    // ลายเซ็นสำหรับแท็บเพิ่มคำร้องแทน
+    const canvas = document.getElementById('registrar-sig-pad');
+    const sigPad = new SignaturePad(canvas);
+    function resizeCanvas() {
+        const ratio = Math.max(window.devicePixelRatio || 1, 1);
+        canvas.width = canvas.offsetWidth * ratio;
+        canvas.height = canvas.offsetHeight * ratio;
+        canvas.getContext("2d").scale(ratio, ratio);
+        sigPad.clear();
+    }
+    window.clearRegSig = () => sigPad.clear();
+
+    // 1. ฟังฟังก์ชันดึงคำร้องเรียลไทม์
+    onSnapshot(collection(db, "requests"), (snapshot) => {
+        const tbody = document.getElementById('request-list-body');
+        tbody.innerHTML = '';
+        snapshot.forEach((docSnap) => {
+            const req = docSnap.data();
+            const id = docSnap.id;
+            
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td>${req.studentId}</td>
+                <td>${req.studentTitle}${req.studentName}</td>
+                <td><strong style="color:${req.intent === 'ลาออก' ? '#c62828':'#0288d1'}">${req.intent}</strong></td>
+                <td><span class="btn btn-info" style="cursor:default; padding:3px 8px; font-size:12px;">${req.status}</span></td>
+                <td>
+                    <div class="action-flex">
+                        <button class="btn btn-warning" onclick="updateStatus('${id}', 'ฝ่ายทะเบียนรับเรื่องแล้ว')">รับเรื่อง</button>
+                        <button class="btn btn-primary" onclick="updateStatus('${id}', 'ฝ่ายทะเบียนกำลังตรวจสอบ')">กำลังตรวจ</button>
+                        <button class="btn btn-danger" onclick="rejectRequest('${id}')">ตีกลับ</button>
+                        <button class="btn btn-success" onclick="updateStatus('${id}', 'คำขอถูกส่งไปยังผู้พิจารณาแล้ว')">ส่งต่อ ผอ.</button>
+                    </div>
+                </td>
+                <td>
+                    <button class="btn btn-info" onclick="printDoc('${id}')" ${req.directorApproval !== 'approved' && req.status !== 'เสร็จสิ้น' ? '' : ''}><i class="fa-solid fa-print"></i> พิมพ์ PDF</button>
+                </td>
+            `;
+            tbody.appendChild(tr);
+        });
+    });
+
+    // อัปเดตสถานะทั่วไป
+    window.updateStatus = async function(id, newStatus) {
+        try {
+            await updateDoc(doc(db, "requests", id), { status: newStatus, isRejected: false });
+            Swal.fire('อัปเดตแล้ว', `เปลี่ยนสถานะเป็น: ${newStatus}`, 'success');
+        } catch (e) { Swal.fire('ผิดพลาด', e.message, 'error'); }
+    }
+
+    // ระบบตีกลับคำขอพร้อมใส่สาเหตุ
+    window.rejectRequest = async function(id) {
+        const { value: reason } = await Swal.fire({
+            title: 'ระบุสาเหตุการตีกลับคำขอ',
+            input: 'text',
+            inputPlaceholder: 'ข้อมูลผิดพลาดตรงไหน...',
+            showCancelButton: true,
+            confirmButtonText: 'ยืนยันตีกลับ',
+            cancelButtonText: 'ยกเลิก',
+            inputValidator: (value) => { if (!value) { return 'กรุณากรอกเหตุผลด้วยครับ' } }
+        });
+
+        if (reason) {
+            try {
+                await updateDoc(doc(db, "requests", id), {
+                    status: "ฝ่ายทะเบียนกำลังตรวจสอบ (ตีกลับแก้ไข)",
+                    isRejected: true,
+                    rejectReason: reason
+                });
+                Swal.fire('สำเร็จ', 'ส่งคำขอคืนให้ผู้สมัครแก้แล้ว', 'success');
+            } catch (e) { Swal.fire('ผิดพลาด', e.message, 'error'); }
+        }
+    }
+
+    // 2. ฟังก์ชันเพิ่มรายชื่อนักเรียนลงระบบ
+    window.addStudent = async function(e) {
+        e.preventDefault();
+        const studentId = document.getElementById('reg-std-id').value;
+        const title = document.getElementById('reg-std-title').value;
+        const name = document.getElementById('reg-std-name').value;
+        const grade = document.getElementById('reg-std-grade').value;
+
+        try {
+            await setDoc(doc(db, "students", studentId), { studentId, title, name, grade });
+            Swal.fire('สำเร็จ', 'เพิ่มรายชื่อนักเรียนเข้าระบบฐานข้อมูลแล้ว', 'success');
+            document.getElementById('add-student-form').reset();
+        } catch (e) { Swal.fire('ผิดพลาด', e.message, 'error'); }
+    }
+
+    // 3. ฟังก์ชันเพิ่มผู้ใช้งานฝ่ายทะเบียน
+    window.addRegistrar = async function(e) {
+        e.preventDefault();
+        const name = document.getElementById('reg-user-name').value;
+        const username = document.getElementById('reg-user-uname').value;
+        const password = document.getElementById('reg-user-pass').value;
+
+        try {
+            await setDoc(doc(doc(db, "users", username)), { name, username, password, role: 'registrar' });
+            Swal.fire('สำเร็จ', 'เพิ่มบัญชีเจ้าหน้าที่ทะเบียนใหม่แล้ว', 'success');
+            document.getElementById('add-registrar-form').reset();
+        } catch (e) { Swal.fire('ผิดพลาด', e.message, 'error'); }
+    }
+
+    // 4. บันทึกคำร้องแทนผู้ปกครอง
+    window.createRequestByStaff = async function(e) {
+        e.preventDefault();
+        if(sigPad.isEmpty()){ Swal.fire('แจ้งเตือน', 'กรุณาลงชื่อเจ้าหน้าที่ก่อนครับ', 'warning'); return; }
+        
+        const studentId = document.getElementById('rep-std-id').value;
+        const parentName = document.getElementById('rep-parent-name').value;
+        const studentName = document.getElementById('rep-std-name').value;
+        const studentGrade = document.getElementById('rep-std-grade').value;
+        const academicYear = document.getElementById('rep-year').value;
+        const intent = document.querySelector('input[name="rep-intent"]:checked').value;
+        const reasonDetail = document.getElementById('rep-reason').value;
+        const regSig = sigPad.toDataURL();
+
+        try {
+            await setDoc(doc(db, "requests", studentId), {
+                studentId, parentName, studentName, studentGrade, academicYear, intent,
+                reasonType: "อื่นๆ", reasonDetail, parentSignature: "", registrarSignature: regSig,
+                status: "คำขอถูกส่งไปยังผู้พิจารณาแล้ว", isRejected: false, directorApproval: "pending",
+                timestamp: new Date()
+            });
+            Swal.fire('สำเร็จ', 'สร้างคำร้องและส่งต่อไปยัง ผอ. เรียบร้อย', 'success');
+            document.getElementById('registrar-create-form').reset();
+            sigPad.clear();
+        } catch (e) { Swal.fire('ผิดพลาด', e.message, 'error'); }
+    }
+
+    window.printDoc = function(id) {
+        localStorage.setItem('print_target_id', id);
+        // เปิดหน้าต่างใหม่เพื่อแสดงใบ PDF สารบรรณครุฑ
+        window.open('print_pdf.html', '_blank');
+    }
+</script>
+</body>
+</html>
