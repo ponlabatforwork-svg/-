@@ -1,12 +1,12 @@
 /* ==========================================================================
-   style.css - สำหรับจัดหน้าพิมพ์เอกสารราชการครุฑ (Print Stylesheet)
+   style.css - จัดรูปแบบหน้าพิมพ์เอกสารคำร้องขอย้ายออก/ลาออก (ตรงตามแบบฟอร์มจริง)
    ========================================================================== */
 
 @import url('https://fonts.googleapis.com/css2?family=Sarabun:wght@400;600;700&display=swap');
 
 body {
     font-family: 'Sarabun', sans-serif;
-    font-size: 16pt;
+    font-size: 15pt;
     color: #000;
     line-height: 1.6;
     margin: 0;
@@ -27,55 +27,85 @@ body {
 
 .garuda-icon {
     display: block;
-    height: 3cm; /* บังคับครุฑสูง 3 ซม. */
+    height: 3cm; /* ขนาดตราครุฑสูง 3 ซม. มาตรฐาน */
     width: auto;
-    margin: 0 auto 0.5cm auto;
+    margin: 0 auto 0.4cm auto;
     object-fit: contain;
 }
 
 .doc-title {
     text-align: center;
-    font-size: 18pt;
+    font-size: 16pt;
     font-weight: bold;
-    margin-bottom: 1cm;
+    margin-bottom: 0.2cm;
+}
+
+.title-line {
+    border-bottom: 1px dotted #000;
+    width: 60%;
+    margin: 0 auto 0.8cm auto;
 }
 
 .text-right { text-align: right; }
-.text-center { text-align: center; }
 .indent { text-indent: 2.5cm; }
-.flex-row { display: flex; flex-wrap: wrap; margin-bottom: 0.3cm; }
-.dotted-line { flex: 1; border-bottom: 1px dotted #000; margin-left: 5px; padding-left: 10px; font-weight: bold; }
+.flex-row { display: flex; flex-wrap: wrap; margin-bottom: 0.2cm; align-items: flex-end; }
+.dotted-line { flex: 1; border-bottom: 1px dotted #000; margin-left: 5px; padding-left: 8px; font-weight: bold; min-height: 22px; }
 
 .checkbox-group { display: inline-flex; align-items: center; margin-right: 15px; }
-.checkbox-box { width: 14pt; height: 14pt; border: 1px solid #000; margin-right: 8px; display: inline-block; text-align: center; line-height: 14pt; font-weight: bold; }
+.checkbox-box { width: 13pt; height: 13pt; border: 1px solid #000; margin-right: 6px; display: inline-block; text-align: center; line-height: 13pt; font-weight: bold; font-size: 11pt; }
 
-.footer-sections {
-    margin-top: 1cm;
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 20px;
+/* โครงสร้างตารางด้านล่างตามภาพแบบฟอร์มเป๊ะๆ */
+.form-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 0.8cm;
 }
 
-.section-box {
+.form-table th, .form-table td {
     border: 1px solid #000;
-    padding: 15px;
+    padding: 8px;
+    vertical-align: top;
     font-size: 14pt;
-    line-height: 1.5;
+}
+
+.form-table th {
+    font-weight: bold;
+    text-align: center;
+    background-color: #fff;
+}
+
+.sub-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 5px;
+}
+.sub-table td {
+    border: none !important;
+    border-right: 1px solid #000 !important;
+    padding: 5px 2px !important;
+}
+.sub-table td:last-child {
+    border-right: none !important;
+}
+
+.table-dotted {
+    border-bottom: 1px dotted #000;
+    margin-top: 18px;
+    height: 15px;
 }
 
 .sig-wrap {
     text-align: center;
-    margin-top: 0.5cm;
     position: relative;
 }
 
 .sig-img {
-    max-height: 40px;
+    max-height: 45px;
     display: block;
-    margin: 0 auto -10px auto;
+    margin: 0 auto -12px auto;
 }
 
-/* ควบคุมตอนกดสั่งปริ้น */
+/* ควบคุมสำหรับ Print Mode */
 @media print {
     body { background: none; }
     .page-container {
