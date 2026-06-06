@@ -28,7 +28,7 @@
             text-align: center;
         }
         h2 {
-            color: #333;
+            color: #2b3e50;
             margin-bottom: 30px;
             font-weight: 600;
         }
@@ -50,11 +50,13 @@
             font-family: 'Sarabun', sans-serif;
             transition: 0.3s;
             font-size: 14px;
+            color: #555;
         }
         .role-btn.active {
             background: white;
             box-shadow: 0 2px 5px rgba(0,0,0,0.1);
             font-weight: bold;
+            color: #2b3e50;
         }
         .input-group {
             margin-bottom: 15px;
@@ -65,6 +67,7 @@
             margin-bottom: 5px;
             font-size: 14px;
             color: #666;
+            font-weight: 600;
         }
         .input-group input {
             width: 100%;
@@ -74,6 +77,10 @@
             border-radius: 8px;
             font-size: 16px;
             outline: none;
+            transition: 0.2s;
+        }
+        .input-group input:focus {
+            border-color: #2b3e50;
         }
         .btn-submit {
             width: 100%;
@@ -86,6 +93,7 @@
             cursor: pointer;
             font-family: 'Sarabun', sans-serif;
             margin-top: 10px;
+            transition: 0.2s;
         }
         .btn-submit:hover {
             background: #1a252f;
@@ -104,7 +112,7 @@
     </div>
 
     <div class="input-group" id="user-group" style="display: none;">
-        <label id="user-label">ชื่อผู้ใช้</label>
+        <label id="user-label">ชื่อผู้ใช้ (Username)</label>
         <input type="text" id="username" placeholder="กรอกชื่อผู้ใช้">
     </div>
     
@@ -113,7 +121,7 @@
         <input type="password" id="password" placeholder="กรอกรหัสนักเรียน">
     </div>
 
-    <button class="btn-submit" onclick="handleLogin()">เข้าสู่ระบบ</button>
+    <button class="btn-submit" onclick="handleLogin()"><i class="fa-solid fa-right-to-bracket"></i> เข้าสู่ระบบ</button>
 </div>
 
 <script type="module">
@@ -121,23 +129,36 @@
 
     let currentRole = 'student';
 
+    // ล้างข้อมูล Session เดิมออกก่อนทุกล็อกอินใหม่
+    localStorage.clear();
+
     window.switchRole = function(role) {
         currentRole = role;
         document.querySelectorAll('.role-btn').forEach(btn => btn.classList.remove('active'));
-        event.target.classList.add('active');
+        
+        // ตรวจสอบและเลือกปุ่มที่ถูกกด
+        if (event && event.target) {
+            event.target.classList.add('active');
+        }
 
         const userGroup = document.getElementById('user-group');
         const passLabel = document.getElementById('pass-label');
         const passInput = document.getElementById('password');
 
+        // รีเซ็ตค่าในช่องฟอร์มเมื่อสลับสิทธิ์
+        document.getElementById('username').value = '';
+        passInput.value = '';
+
         if (role === 'student') {
             userGroup.style.display = 'none';
             passLabel.innerText = 'รหัสนักเรียน';
             passInput.placeholder = 'กรอกรหัสนักเรียน';
+            passInput.type = 'text'; // เปิดเป็น Text เพื่อให้เห็นรหัสนักเรียนชัดเจนขณะกรอก
         } else {
             userGroup.style.display = 'block';
             passLabel.innerText = 'รหัสผ่าน';
             passInput.placeholder = 'กรอกรหัสผ่าน';
+            passInput.type = 'password';
         }
     }
 
@@ -145,32 +166,87 @@
         const username = document.getElementById('username').value.trim();
         const password = document.getElementById('password').value.trim();
 
+        // 1. ตรวจสอบสิทธิ์ล็อกอินสำหรับ "นักเรียน/ผู้ปกครอง"
         if (currentRole === 'student') {
             if (!password) {
-                Swal.fire('กรุณากรอกข้อมูล', 'โปรดกรอกรหัสนักเรียน', 'warning');
+                Swal.fire('กรุณากรอกข้อมูล', 'โปรดกรอกรหัสนักเรียนเพื่อเข้าใช้ระบบ', 'warning');
                 return;
             }
-            // จำลองการเช็คหรือเช็คกับ DB (ในอนาคตจะดึงจาก Table Student ที่ฝ่ายทะเบียนเพิ่มไว้)
-            Swal.fire('สำเร็จ', 'ยินดีต้อนรับนักเรียนรหัส ' + password, 'success')
-            .then(() => {
-                localStorage.setItem('studentId', password);
-                window.location.href = 'student.html';
-            });
 
-        } else if (currentRole === 'registrar') {
-            if (username === 'T680591' && password === 'TPURP08SS') {
-                Swal.fire('สำเร็จ', 'ยินดีต้อนรับเจ้าหน้าที่ฝ่ายงานทะเบียน', 'success')
-                .then(() => window.location.href = 'registrar.html');
-            } else {
-                Swal.fire('ข้อผิดพลาด', 'ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง', 'error');
+            try {
+                // ตรวจสอบความถูกต้องว่ามีรหัสนักเรียนรายนี้อยู่ในฐานข้อมูลระบบจริงหรือไม่
+                const studentSnap = await getDoc(doc(db, "students", password));
+                
+                if (studentSnap.exists()) {
+                    const studentData = studentSnap.data();
+                    Swal.fire({
+                        title: 'เข้าสู่ระบบสำเร็จ',
+                        text: `ยินดีต้อนรับคุณ ${studentData.title}${studentData.name}`,
+                        icon: 'success',
+                        confirmButtonColor: '#2b3e50'
+                    }).then(() => {
+                        localStorage.setItem('studentId', password);
+                        window.location.href = 'student.html';
+                    });
+                } else {
+                    Swal.fire('ไม่พบข้อมูล', 'ไม่มีรหัสนักเรียนรายนี้ในฐานข้อมูลโรงเรียน กรุณาติดต่อฝ่ายทะเบียน', 'error');
+                }
+            } catch (error) {
+                Swal.fire('เกิดข้อผิดพลาด', 'ไม่สามารถเชื่อมต่อฐานข้อมูลได้: ' + error.message, 'error');
             }
 
+        // 2. ตรวจสอบสิทธิ์ล็อกอินสำหรับ "เจ้าหน้าที่ฝ่ายทะเบียน"
+        } else if (currentRole === 'registrar') {
+            if (!username || !password) {
+                Swal.fire('กรุณากรอกข้อมูล', 'โปรดกรอกชื่อผู้ใช้และรหัสผ่าน', 'warning');
+                return;
+            }
+
+            // ตรวจสอบกับรหัส Master หลักก่อน
+            if (username === 'T680591' && password === 'TPURP08SS') {
+                Swal.fire('เข้าสู่ระบบสำเร็จ', 'ยินดีต้อนรับเจ้าหน้าที่ฝ่ายงานทะเบียน (บัญชีหลัก)', 'success')
+                .then(() => {
+                    localStorage.setItem('registrarUsername', 'เจ้าหน้าที่ทะเบียนหลัก');
+                    window.location.href = 'registrar.html';
+                });
+                return;
+            }
+
+            try {
+                // ถ้าไม่ใช่รหัส Master ให้ไปตรวจเช็คบัญชีรองที่ถูกเพิ่มในคอลเลกชัน "users"
+                const userSnap = await getDoc(doc(db, "users", username));
+                if (userSnap.exists()) {
+                    const userData = userSnap.data();
+                    if (userData.password === password && userData.role === 'registrar') {
+                        Swal.fire('เข้าสู่ระบบสำเร็จ', `ยินดีต้อนรับเจ้าหน้าที่ ${userData.name}`, 'success')
+                        .then(() => {
+                            localStorage.setItem('registrarUsername', userData.name);
+                            window.location.href = 'registrar.html';
+                        });
+                        return;
+                    }
+                }
+                Swal.fire('ข้อผิดพลาด', 'ชื่อผู้ใช้หรือรหัสผ่านฝ่ายทะเบียนไม่ถูกต้อง', 'error');
+            } catch (error) {
+                Swal.fire('เกิดข้อผิดพลาด', error.message, 'error');
+            }
+
+        // 3. ตรวจสอบสิทธิ์ล็อกอินสำหรับ "ผู้พิจารณา (ผู้อำนวยการโรงเรียน)"
         } else if (currentRole === 'director') {
+            if (!username || !password) {
+                Swal.fire('กรุณากรอกข้อมูล', 'โปรดกรอกชื่อผู้ใช้และรหัสผ่าน', 'warning');
+                return;
+            }
+
+            // ตรวจสอบกับรหัสพิจารณาโครงสร้างหลักของ ผอ.
             if (username === 'PAURP09981' && password === 'TTPP074') {
-                Swal.fire('สำเร็จ', 'ยินดีต้อนรับผู้อำนวยการโรงเรียน', 'success')
-                .then(() => window.location.href = 'director.html');
+                Swal.fire('เข้าสู่ระบบสำเร็จ', 'ยินดีต้อนรับผู้อำนวยการโรงเรียนเข้าสู่ระบบพิจารณาคำร้อง', 'success')
+                .then(() => {
+                    localStorage.setItem('directorUsername', 'ผู้อำนวยการโรงเรียน');
+                    window.location.href = 'director.html';
+                });
             } else {
-                Swal.fire('ข้อผิดพลาด', 'ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง', 'error');
+                Swal.fire('ข้อผิดพลาด', 'ชื่อผู้ใช้หรือรหัสผ่านผู้พิจารณาไม่ถูกต้อง', 'error');
             }
         }
     }
