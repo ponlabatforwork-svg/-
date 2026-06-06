@@ -15,46 +15,50 @@
     <div class="title-line"></div>
 
     <div class="text-right" style="margin-bottom: 0.1cm;">
-        เขียนที่ <span id="lbl-school-name" style="font-weight:bold;">...................................................</span>
+        เขียนที่ <div class="line-field" style="width: 6.5cm;"><span class="line-value" id="lbl-school-name"></span></div>
     </div>
-    <div class="text-right" style="margin-bottom: 0.6cm;">
-        วันที่...<span id="lbl-day">..</span>...เดือน......<span id="lbl-month">......</span>......พ.ศ...<span id="lbl-year">....</span>...
-    </div>
-
-    <div style="margin-bottom: 0.2cm;">เรียน ผู้อำนวยการโรงเรียน <span id="lbl-school-title" style="font-weight:bold;">...................................................</span></div>
-    <div style="margin-bottom: 0.5cm; padding-left: 1.2cm;">เรื่อง ขอย้ายออก/ลาออกจากสถานศึกษา</div>
-
-    <div class="flex-row">
-        ข้าพเจ้า นาย/นาง/นางสาว<div class="dotted-line" id="pdf-parent-name"></div>เป็นผู้ปกครองของ
-    </div>
-    <div class="flex-row">
-        เด็กหญิง/เด็กชาย/นาย/นางสาว<div class="dotted-line" id="pdf-student-name"></div>นักเรียนระดับชั้นมัธยมศึกษาปีที่<div class="dotted-line" id="pdf-grade" style="flex: 0 0 1.5cm; text-align:center;"></div> / <div class="dotted-line" id="pdf-room" style="flex: 0 0 1.5cm; text-align:center;"></div>
-    </div>
-    <div class="flex-row">
-        เลขประจำตัวนักเรียน<div class="dotted-line" id="pdf-std-id" style="flex: 0 0 5cm;"></div>ปีการศึกษา<div class="dotted-line" id="pdf-year"></div>มีความประสงค์จะขอ <span class="checkbox-group" style="margin-left:10px;"><span class="checkbox-box" id="chk-quit"></span> ลาออก</span> <span class="checkbox-group"><span class="checkbox-box" id="chk-move"></span> ย้ายออก</span>
+    <div class="text-right" style="margin-bottom: 0.8cm;">
+        วันที่ <div class="line-field" style="width: 1.5cm;"><span class="line-value" id="lbl-day"></span></div> เดือน <div class="line-field" style="width: 3.5cm;"><span class="line-value" id="lbl-month"></span></div> พ.ศ. <div class="line-field" style="width: 2cm;"><span class="line-value" id="lbl-year"></span></div>
     </div>
 
-    <div style="margin: 0.2cm 0 0.1cm 0;">เนื่องด้วยมีความจำเป็นดังต่อไปนี้</div>
+    <div style="margin-bottom: 0.3cm;">เรียน ผู้อำนวยการโรงเรียน <div class="line-field" style="width: 8.5cm;"><span class="line-value" id="lbl-school-title"></span></div></div>
+    <div style="margin-bottom: 0.6cm; padding-left: 1.2cm;">เรื่อง ขอย้ายออก/ลาออกจากสถานศึกษา</div>
+
+    <div class="gov-row">
+        <span class="indent"></span>ข้าพเจ้า นาย/นาง/นางสาว <div class="line-field" style="width: 8.5cm;"><span class="line-value" id="pdf-parent-name"></span></div> เป็นผู้ปกครองของ
+    </div>
     
-    <div class="flex-row">
-        <span class="checkbox-group" style="padding-left: 1.5cm;"><span class="checkbox-box" id="chk-reason-study"></span> ไปศึกษาต่อที่</span>
-        <div class="dotted-line" id="pdf-reason-study"></div>
+    <div class="gov-row">
+        เด็กหญิง/เด็กชาย/นาย/นางสาว <div class="line-field" style="width: 6.5cm;"><span class="line-value" id="pdf-student-name"></span></div> นักเรียนระดับชั้นมัธยมศึกษาปีที่ <div class="line-field" style="width: 1.2cm;"><span class="line-value" id="pdf-grade"></span></div> / <div class="line-field" style="width: 1.2cm;"><span class="line-value" id="pdf-room"></span></div>
     </div>
-    <div class="flex-row">
-        <span class="checkbox-group" style="padding-left: 1.5cm;"><span class="checkbox-box" id="chk-reason-job"></span> ไปประกอบอาชีพ</span>
-        <div class="dotted-line" id="pdf-reason-job" style="visibility:hidden;"></div>
-    </div>
-    <div class="flex-row">
-        <span class="checkbox-group" style="padding-left: 1.5cm;"><span class="checkbox-box" id="chk-reason-other"></span> อื่นๆ (ระบุ)</span>
-        <div class="dotted-line" id="pdf-reason-other"></div>
+    
+    <div class="gov-row">
+        เลขประจำตัวนักเรียน <div class="line-field" style="width: 4cm;"><span class="line-value" id="pdf-std-id"></span></div> ปีการศึกษา <div class="line-field" style="width: 2.2cm;"><span class="line-value" id="pdf-year"></span></div> มีความประสงค์จะขอ 
+        <span class="checkbox-group" style="margin-left: 10px;"><span class="checkbox-box" id="chk-quit"></span> ลาออก</span>
+        <span class="checkbox-group"><span class="checkbox-box" id="chk-move"></span> ย้ายออก</span>
     </div>
 
-    <div style="margin-top: 0.6cm; margin-bottom: 0.4cm; padding-left: 9cm; text-align: center; font-size: 14pt;">
+    <div style="margin: 0.4cm 0 0.2cm 0;">เนื่องด้วยมีความจำเป็นดังต่อไปนี้</div>
+    
+    <div class="gov-row" style="padding-left: 1cm;">
+        <span class="checkbox-group"><span class="checkbox-box" id="chk-reason-study"></span> ไปศึกษาต่อที่</span> 
+        <div class="line-field" style="width: 11.5cm;"><span class="line-value" id="pdf-reason-study"></span></div>
+    </div>
+    <div class="gov-row" style="padding-left: 1cm;">
+        <span class="checkbox-group"><span class="checkbox-box" id="chk-reason-job"></span> ไปประกอบอาชีพ</span>
+        <div class="line-field" style="width: 11.2cm; border-bottom: 1px dotted #000;"><span class="line-value" id="pdf-reason-job" style="visibility: hidden;">-</span></div>
+    </div>
+    <div class="gov-row" style="padding-left: 1cm;">
+        <span class="checkbox-group"><span class="checkbox-box" id="chk-reason-other"></span> อื่นๆ (ระบุ)</span>
+        <div class="line-field" style="width: 12.5cm;"><span class="line-value" id="pdf-reason-other"></span></div>
+    </div>
+
+    <div style="margin-top: 0.8cm; margin-bottom: 0.6cm; padding-left: 9.5cm; text-align: center; font-size: 14pt;">
         ขอแสดงความนับถือ<br><br><br>
         <div class="sig-wrap">
             <img src="" id="img-parent-sig" class="sig-img" style="display:none;">
-            ลงชื่อ..........................................................ผู้ปกครอง<br>
-            (<span id="pdf-parent-sub">..........................................................</span>)
+            ลงชื่อ <div class="line-field" style="width: 4.5cm; border-bottom: 1px dotted #000;"></div> ผู้ปกครอง<br>
+            ( <div class="line-field" style="width: 4.5cm;"><span class="line-value" id="pdf-parent-sub"></span></div> )
         </div>
     </div>
 
@@ -70,7 +74,7 @@
                 <td style="padding: 0;">
                     <table class="sub-table">
                         <tr>
-                            <td style="width: 50%; padding: 8px !important;">
+                            <td style="width: 50%; padding: 10px !important;">
                                 <b>ครูที่ปรึกษาคนที่ ๑</b>
                                 <div class="table-dotted"></div>
                                 <div class="table-dotted"></div>
@@ -78,7 +82,7 @@
                                 <div class="table-dotted"></div>
                                 <div class="table-dotted"></div>
                             </td>
-                            <td style="width: 50%; padding: 8px !important;">
+                            <td style="width: 50%; padding: 10px !important;">
                                 <b>ครูที่ปรึกษาคนที่ ๒</b>
                                 <div class="table-dotted"></div>
                                 <div class="table-dotted"></div>
@@ -90,18 +94,18 @@
                     </table>
                 </td>
                 
-                <td style="padding: 12px; position: relative; min-height: 220px;">
-                    <div style="margin-bottom: 15px;">
+                <td style="padding: 15px; position: relative; min-height: 240px;">
+                    <div style="margin-bottom: 18px;">
                         <span class="checkbox-box" id="chk-dir-approve"></span> อนุมัติ
                     </div>
-                    <div style="margin-bottom: 15px;">
-                        <span class="checkbox-box" id="chk-dir-disapprove"></span> ไม่อนุมัติ <span style="float: right; margin-right: 20px;">(ลงวันที่)....................................</span>
+                    <div style="margin-bottom: 18px;">
+                        <span class="checkbox-box" id="chk-dir-disapprove"></span> ไม่อนุมัติ <span style="float: right; margin-right: 10px;">(ลงวันที่)....................................</span>
                     </div>
                     
                     <div class="sig-wrap" style="margin-top: 1.8cm;">
                         <img src="" id="img-director-sig" class="sig-img" style="display:none;">
-                        ลงชื่อ..........................................................ผู้อำนวยการสถานศึกษา<br>
-                        (<span id="lbl-director-name">......................................................</span>)
+                        ลงชื่อ <div class="line-field" style="width: 5cm; border-bottom: 1px dotted #000;"></div> ผู้อำนวยการสถานศึกษา<br>
+                        ( <div class="line-field" style="width: 5cm;"><span class="line-value" id="lbl-director-name"></span></div> )
                     </div>
                 </td>
             </tr>
@@ -114,10 +118,10 @@
 
     document.addEventListener("DOMContentLoaded", async () => {
         const requestId = localStorage.getItem('print_target_id');
-        if (!requestId) { alert("ไม่พบข้อมูลคำร้องขอดำเนินการพิมพ์"); return; }
+        if (!requestId) { alert("ไม่พบข้อมูลรหัสคำร้องเพื่อดำเนินการพิมพ์"); return; }
 
         try {
-            // 1. โหลดข้อมูลการตั้งค่าโรงเรียนและชื่อ ผอ.
+            // 1. โหลดชื่อสถาบันและผู้บริหารจาก Database กลาง
             const systemSnap = await getDoc(doc(db, "system", "settings"));
             if(systemSnap.exists()) {
                 const sys = systemSnap.data();
@@ -126,18 +130,16 @@
                 document.getElementById('lbl-director-name').innerText = sys.directorName || 'ผู้อำนวยการโรงเรียน';
             }
 
-            // 2. โหลดข้อมูลใบคำร้อง
+            // 2. ดึงดีเทลคำร้องมาหยอดใส่ล็อกฟอร์ม
             const docSnap = await getDoc(doc(db, "requests", requestId));
             if (docSnap.exists()) {
                 const data = docSnap.data();
 
-                // ใส่วันที่พิมพ์เอกสารราชการปัจจุบัน
                 const today = new Date();
                 document.getElementById('lbl-day').innerText = today.getDate();
                 document.getElementById('lbl-month').innerText = today.toLocaleString('th-TH', { month: 'long' });
                 document.getElementById('lbl-year').innerText = today.getFullYear() + 543;
 
-                // แมปข้อมูลลงหน้าแบบฟอร์ม
                 document.getElementById('pdf-parent-name').innerText = `${data.parentTitle || ''}${data.parentName || ''}`;
                 document.getElementById('pdf-parent-sub').innerText = `${data.parentTitle || ''}${data.parentName || ''}`;
                 document.getElementById('pdf-student-name').innerText = `${data.studentTitle || ''}${data.studentName || ''}`;
@@ -146,14 +148,12 @@
                 document.getElementById('pdf-std-id').innerText = data.studentId || '';
                 document.getElementById('pdf-year').innerText = data.academicYear || '';
 
-                // ประมวลผลประเภทความประสงค์
                 if (data.intent === "ลาออก") {
                     document.getElementById('chk-quit').innerText = "✓";
                 } else if (data.intent === "ย้ายออก") {
                     document.getElementById('chk-move').innerText = "✓";
                 }
 
-                // ประมวลผลสาเหตุความจำเป็น
                 if (data.reasonType === "ศึกษาต่อ") {
                     document.getElementById('chk-reason-study').innerText = "✓";
                     document.getElementById('pdf-reason-study').innerText = data.reasonDetail || '';
@@ -164,14 +164,12 @@
                     document.getElementById('pdf-reason-other').innerText = data.reasonDetail || '';
                 }
 
-                // โหลดลายเซ็นผู้ปกครอง
                 if (data.parentSignature) {
                     const pSig = document.getElementById('img-parent-sig');
                     pSig.src = data.parentSignature;
                     pSig.style.display = "block";
                 }
 
-                // โหลดผลการอนุมัติและลายเซ็น ผอ.
                 if (data.status === "เสร็จสิ้น" && data.directorSignature) {
                     const dSig = document.getElementById('img-director-sig');
                     dSig.src = data.directorSignature;
@@ -184,25 +182,24 @@
                     }
                 }
 
-                // 🔥 เทคนิคแก้ปัญหาชื่อไฟล์ซ้ำ: เปลี่ยนแท็ก <title> ให้ไม่ซ้ำกันก่อนสั่งพิมพ์
-                const dateString = today.toISOString().slice(0,10).replace(/-/g,""); // เช่น 20261024
-                const timeString = today.toTimeString().slice(0,8).replace(/:/g,""); // เช่น 143522
+                // สคริปต์สับเปลี่ยนชื่อไฟล์อัตโนมัติอ้างอิงรหัส วันที่ และวินาทีที่กดปริ้น เพื่อความไม่ซ้ำซ้อน
+                const dateString = today.toISOString().slice(0,10).replace(/-/g,"");
+                const timeString = today.toTimeString().slice(0,8).replace(/:/g,"");
                 const studentId = data.studentId || "student";
                 const typeText = data.intent || "คำร้อง";
                 
-                // บังคับเปลี่ยนหัวเว็บเป็น: รหัสนักเรียน_ประเภท_วันที่_เวลา.pdf เพื่อไม่ให้ชื่อซ้ำกันเลยสักครั้ง
                 document.title = `${studentId}_${typeText}_${dateString}_${timeString}`;
 
-                // รอโหลดลายเซ็นรูปภาพให้เรียบร้อยแล้วเรียกหน้าต่างบันทึกพิมพ์ทันที
+                // รอโหลดลายเซ็นกราฟิกให้ครบถ้วนแล้วเปิดหน้าต่างพิมพ์ทันที
                 setTimeout(() => {
                     window.print();
                 }, 1000);
 
             } else {
-                alert("ไม่พบข้อมูลเอกสารในระบบฐานข้อมูล");
+                alert("ไม่พบรหัสเอกสารในสารบบคลังข้อมูล");
             }
         } catch (error) {
-            console.error("เกิดข้อผิดพลาดในการพิมพ์เอกสาร:", error);
+            console.error("ผิดพลาดทางระบบงานพิมพ์:", error);
         }
     });
 </script>
