@@ -13,30 +13,31 @@
         body { font-family: 'Sarabun', sans-serif; background-color: #f4f6f9; margin: 0; padding: 20px; }
         .container { max-width: 1100px; margin: auto; background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.05); }
         .nav-tabs { display: flex; gap: 10px; border-bottom: 2px solid #eee; margin-bottom: 20px; padding-bottom: 10px; }
-        .tab-btn { padding: 10px 20px; border: none; background: #e0e0e0; cursor: pointer; border-radius: 6px; font-family: 'Sarabun', sans-serif; font-size: 16px; }
+        .tab-btn { padding: 10px 20px; border: none; background: #e0e0e0; cursor: pointer; border-radius: 6px; font-family: 'Sarabun', sans-serif; font-size: 16px; transition: 0.2s; }
         .tab-btn.active { background: #2b3e50; color: white; font-weight: bold; }
         .tab-content { display: none; }
         .tab-content.active { display: block; }
         
-        table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 15px; }
         th, td { border: 1px solid #ddd; padding: 12px; text-align: left; }
         th { background-color: #2b3e50; color: white; }
         tr:nth-child(even) { background-color: #f9f9f9; }
         
         .form-group { margin-bottom: 15px; }
-        label { display: block; font-weight: 600; margin-bottom: 5px; }
-        input[type="text"] { width: 100%; padding: 10px; box-sizing: border-box; border: 1px solid #ddd; border-radius: 6px; }
+        label { display: block; font-weight: 600; margin-bottom: 5px; color: #444; }
+        input[type="text"] { width: 100%; padding: 10px; box-sizing: border-box; border: 1px solid #ddd; border-radius: 6px; font-size: 15px; }
         
-        .btn { padding: 6px 12px; border: none; border-radius: 4px; cursor: pointer; font-family: 'Sarabun', sans-serif; font-size: 14px; }
+        .btn { padding: 6px 12px; border: none; border-radius: 4px; cursor: pointer; font-family: 'Sarabun', sans-serif; font-size: 14px; transition: 0.2s; }
         .btn-success { background: #2e7d32; color: white; }
         .btn-danger { background: #c62828; color: white; }
         .btn-warning { background: #f57c00; color: white; }
         .btn-primary { background: #2b3e50; color: white; }
         .btn-info { background: #0288d1; color: white; }
+        .btn:hover { opacity: 0.9; }
         
-        .signature-container { border: 2px dashed #ccc; background: #fafafa; border-radius: 6px; width: 300px; height: 150px; margin-top: 10px; }
+        .signature-container { border: 2px dashed #ccc; background: #fafafa; border-radius: 6px; width: 100%; max-width: 350px; height: 150px; margin: 10px auto; position: relative; }
         canvas { width: 100%; height: 100%; }
-        .flex-buttons { display: flex; gap: 5px; }
+        .flex-buttons { display: flex; gap: 5px; flex-wrap: wrap; }
     </style>
 </head>
 <body>
@@ -50,15 +51,15 @@
     </div>
 
     <div id="review-tab" class="tab-content active">
-        <h3><i class="fa-solid fa-folder-open"></i> รายการคำร้องส่งถึงคุณ</h3>
+        <h3><i class="fa-solid fa-folder-open"></i> รายการคำร้องที่ส่งเข้ามาพิจารณา</h3>
         <table>
             <thead>
                 <tr>
                     <th>นักเรียน</th>
                     <th>ความประสงค์</th>
-                    <th>เหตุผล</th>
+                    <th>เหตุผลความจำเป็น</th>
                     <th>สถานะปัจจุบัน</th>
-                    <th>การพิจารณา</th>
+                    <th>การดำเนินการพิจารณา</th>
                 </tr>
             </thead>
             <tbody id="director-list-body">
@@ -67,29 +68,31 @@
     </div>
 
     <div id="settings-tab" class="tab-content">
-        <h3><i class="fa-solid fa-gear"></i> ตั้งค่าข้อมูลสถานศึกษา (สำหรับแสดงบน PDF)</h3>
+        <h3><i class="fa-solid fa-gear"></i> ตั้งค่าข้อมูลสถานศึกษา (สำหรับดึงไปพิมพ์ลงหัวแบบฟอร์มครุฑ PDF)</h3>
         <form id="settings-form" onsubmit="saveSettings(event)">
             <div class="form-group">
                 <label>ชื่อโรงเรียน</label>
-                <input type="text" id="set-school-name" required>
+                <input type="text" id="set-school-name" placeholder="เช่น โรงเรียนวิทยาศาสตร์ก้าวหน้า" required>
             </div>
             <div class="form-group">
                 <label>ชื่อ-สกุล เจ้าหน้าที่ฝ่ายทะเบียน</label>
-                <input type="text" id="set-registrar-name" required>
+                <input type="text" id="set-registrar-name" placeholder="ระบุชื่อจริงเจ้าหน้าที่ทะเบียนกลาง" required>
             </div>
             <div class="form-group">
                 <label>ชื่อ-สกุล ผู้อำนวยการโรงเรียน</label>
-                <input type="text" id="set-director-name" required>
+                <input type="text" id="set-director-name" placeholder="ระบุชื่อผู้มีอำนาจลงนามอนุมัติเอกสาร" required>
             </div>
-            <button type="submit" class="btn btn-primary">บันทึกการตั้งค่า</button>
+            <button type="submit" class="btn btn-primary" style="padding: 10px 20px;"><i class="fa-solid fa-floppy-disk"></i> บันทึกการตั้งค่าระบบ</button>
         </form>
     </div>
 </div>
 
 <div id="sig-modal" style="display:none;">
-    <p>ลงนามผู้อำนวยการโรงเรียน</p>
-    <div class="signature-container"><canvas id="director-sig-pad"></canvas></div>
-    <button class="btn btn-warning" onclick="clearDirSig()" style="margin-top:5px;">ล้าง</button>
+    <p style="margin-bottom:5px;">โปรดเขียนลายเซ็นอิเล็กทรอนิกส์ลงในกรอบด้านล่าง</p>
+    <div class="signature-container">
+        <canvas id="modal-director-sig"></canvas>
+    </div>
+    <button type="button" class="btn btn-secondary" id="btn-clear-modal-sig" style="margin-top:5px; padding:3px 10px; font-size:12px;">ล้างลายเซ็น</button>
 </div>
 
 <script type="module">
@@ -102,10 +105,12 @@
         document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
         document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
         document.getElementById(tabId).classList.add('active');
-        event.target.classList.add('active');
+        if (event && event.target) {
+            event.target.classList.add('active');
+        }
     }
 
-    // ดึงข้อมูลคำร้องเฉพาะที่ส่งถึง ผอ.
+    // ดึงข้อมูลคำร้องแบบเรียลไทม์เพื่อขึ้นมาพิจารณาตามสิทธิ์
     onSnapshot(collection(db, "requests"), (snapshot) => {
         const tbody = document.getElementById('director-list-body');
         tbody.innerHTML = '';
@@ -113,15 +118,18 @@
             const req = docSnap.data();
             const id = docSnap.id;
             
-            // แสดงเฉพาะคำร้องที่ฝ่ายทะเบียนส่งมาแล้ว หรือ ผอ. กำลังตรวจ
-            if(req.status.includes("ผู้พิจารณา") || req.status === "คำขอถูกส่งไปยังผู้พิจารณาแล้ว") {
+            // คัดกรองเฉพาะคำร้องที่ส่งมาถึงขั้นตอนของ ผอ. หรือเสร็จสิ้นไปแล้วเพื่อตรวจสอบย้อนหลัง
+            if(req.status.includes("ผู้พิจารณา") || req.status === "คำขอถูกส่งไปยังผู้พิจารณาแล้ว" || req.status === "เสร็จสิ้น") {
                 const tr = document.createElement('tr');
-                tr.innerHTML = `
-                    <td>${req.studentTitle}${req.studentName} (ม.${req.studentGrade})</td>
-                    <td><b style="color:red">${req.intent}</b></td>
-                    <td>${req.reasonType} ${req.reasonDetail || ''}</td>
-                    <td><span class="btn btn-info">${req.status}</span></td>
-                    <td>
+                
+                // แยกกรณีประเมินการเปิด-ปิดปุ่ม หากพิจารณา "เสร็จสิ้น" ไปแล้ว จะแสดงเฉพาะผลลัพธ์
+                let actionContent = "";
+                if (req.status === "เสร็จสิ้น") {
+                    let badgeColor = req.directorApproval === 'approved' ? '#2e7d32' : '#c62828';
+                    let badgeText = req.directorApproval === 'approved' ? 'อนุมัติแล้ว' : 'ไม่อนุมัติ';
+                    actionContent = `<b style="color:${badgeColor}; font-size:15px;"><i class="fa-solid fa-circle-check"></i> ดำเนินการเสร็จสิ้น (${badgeText})</b>`;
+                } else {
+                    actionContent = `
                         <div class="flex-buttons">
                             <button class="btn btn-warning" onclick="updateDirStatus('${id}', 'ผู้พิจารณารับเรื่องแล้ว')">รับเรื่อง</button>
                             <button class="btn btn-primary" onclick="updateDirStatus('${id}', 'ผู้พิจารณากำลังตรวจสอบ')">กำลังตรวจ</button>
@@ -129,7 +137,15 @@
                             <button class="btn btn-success" onclick="openSignatureModal('${id}', 'approved')">อนุมัติ</button>
                             <button class="btn btn-danger" style="background:#555" onclick="openSignatureModal('${id}', 'disapproved')">ไม่อนุมัติ</button>
                         </div>
-                    </td>
+                    `;
+                }
+
+                tr.innerHTML = `
+                    <td>${req.studentTitle || ''}${req.studentName} (ม.${req.studentGrade})</td>
+                    <td><b style="color:${req.intent === 'ลาออก' ? '#c62828':'#0288d1'}">${req.intent}</b></td>
+                    <td>${req.reasonType} ${req.reasonDetail || ''}</td>
+                    <td><span class="btn btn-info" style="cursor:default; padding:3px 8px; font-size:12px; font-weight:normal;">${req.status}</span></td>
+                    <td>${actionContent}</td>
                 `;
                 tbody.appendChild(tr);
             }
@@ -137,23 +153,29 @@
     });
 
     window.updateDirStatus = async function(id, newStatus) {
-        await updateDoc(doc(db, "requests", id), { status: newStatus });
-        Swal.fire('สำเร็จ', 'อัปเดตสถานะการตรวจสอบแล้ว', 'success');
+        try {
+            await updateDoc(doc(db, "requests", id), { status: newStatus });
+            Swal.fire('สำเร็จ', 'อัปเดตสถานะการเดินเรื่องเรียบร้อยแล้ว', 'success');
+        } catch (e) { Swal.fire('ข้อผิดพลาด', e.message, 'error'); }
     }
 
-    // ระบบตีกลับแบบเลือกปลายทางได้ (ทะเบียน หรือ นักเรียน)
+    // ระบบจัดการตีกลับของ ผอ. (เจาะจงระบุเป้าหมายเพื่อปลดล็อกฟอร์มนักเรียนได้แม่นยำ)
     window.directorReject = async function(id) {
         const { value: formValues } = await Swal.fire({
-            title: 'ระบุรายละเอียดการตีกลับ',
+            title: 'ระบุรายละเอียดสายงานการตีกลับเอกสาร',
             html: `
-                <div style="text-align:left; margin-bottom:10px;">
-                    <label><b>ส่งกลับไปยัง:</b></label><br>
-                    <input type="radio" name="back-to" value="registrar" checked> ฝ่ายทะเบียน <br>
-                    <input type="radio" name="back-to" value="student"> ผู้ส่งคำขอ (นักเรียน/ผู้ปกครอง)
+                <div style="text-align:left; margin-bottom:15px; font-size:15px;">
+                    <label style="font-weight:bold;">ส่งเอกสารกลับไปยังจุดใด:</label><br>
+                    <input type="radio" name="back-to" value="registrar" checked> ฝ่ายงานทะเบียนยื่นตรวจสอบใหม่ <br>
+                    <input type="radio" name="back-to" value="student"> ส่งคืนผู้สมัครโดยตรง (เพื่อให้นักเรียนแก้ไขข้อมูลใหม่)
                 </div>
-                <input id="swal-input-reason" class="swal2-input" placeholder="ระบุหมายเหตุ/สาเหตุการตีกลับ" style="margin:0; width:90%;">
+                <input id="swal-input-reason" class="swal2-input" placeholder="กรอกหมายเหตุ/เหตุผลประกอบการตีกลับ..." style="margin:0; width:90%; font-family: 'Sarabun', sans-serif;">
             `,
             focusConfirm: false,
+            showCancelButton: true,
+            confirmButtonText: 'ยืนยันการตีกลับ',
+            cancelButtonText: 'ยกเลิก',
+            confirmButtonColor: '#c62828',
             preConfirm: () => {
                 return {
                     target: document.querySelector('input[name="back-to"]:checked').value,
@@ -163,68 +185,97 @@
         });
 
         if (formValues) {
-            if(!formValues.reason) { Swal.fire('แจ้งเตือน', 'กรุณาระบุหมายเหตุการตีกลับ', 'warning'); return; }
+            if(!formValues.reason) { Swal.fire('แจ้งเตือน', 'จำเป็นต้องกรอกหมายเหตุการตีกลับ เพื่อแจ้งแก่เจ้าหน้าที่ฝ่ายปฏิบัติงาน', 'warning'); return; }
             
-            let finalStatus = formValues.target === 'registrar' ? "ฝ่ายทะเบียนกำลังตรวจสอบ" : "ฝ่ายทะเบียนกำลังตรวจสอบ (ตีกลับแก้ไข)";
-            await updateDoc(doc(db, "requests", id), {
-                status: finalStatus,
-                isRejected: true,
-                rejectReason: `(ผอ. ตีกลับ) ${formValues.reason}`
-            });
-            Swal.fire('สำเร็จ', 'ตีกลับคำร้องเรียบร้อยแล้ว', 'success');
+            // ถ้าระบุคืนให้นักเรียน ให้ตีกลับไปที่สถานะตรวจสอบปกติ และแนบสิทธิ์ student เพื่อให้สอดรับกับฟังก์ชันเงื่อนไขปลดฟอร์มแก้ไขของหน้าจอ student.html
+            let finalStatus = "ฝ่ายทะเบียนกำลังตรวจสอบ";
+            let targetRejectTo = formValues.target === 'student' ? 'student' : 'registrar';
+
+            try {
+                await updateDoc(doc(db, "requests", id), {
+                    status: finalStatus,
+                    isRejected: true,
+                    rejectedTo: targetRejectTo,
+                    rejectReason: `(ผอ. แจ้งหมายเหตุกลับ) ${formValues.reason}`
+                });
+                Swal.fire('สำเร็จ', 'ส่งเอกสารย้อนกลับไปแก้ไขเรียบร้อยแล้ว', 'success');
+            } catch (e) { Swal.fire('ข้อผิดพลาด', e.message, 'error'); }
         }
     }
 
-    // เปิดหน้าต่างเซ็นชื่อเมื่อกด อนุมัติ/ไม่อนุมัติ
+    // เปิด SweetAlert2 ขึ้นมาผสานกับกลุ่มเซ็นชื่ออิเล็กทรอนิกส์
     window.openSignatureModal = function(id, decision) {
         currentActiveId = id;
+        
         Swal.fire({
-            title: decision === 'approved' ? 'ยืนยันการอนุมัติ' : 'ยืนยันไม่อนุมัติ',
+            title: decision === 'approved' ? 'ลงนามบันทึกการ "อนุมัติ"' : 'ลงนามบันทึกการ "ไม่อนุมัติ"',
             html: document.getElementById('sig-modal').innerHTML,
             showCancelButton: true,
-            confirmButtonText: 'บันทึกผลการพิจารณา',
+            confirmButtonText: 'ยืนยันและปิดงาน',
             cancelButtonText: 'ยกเลิก',
+            confirmButtonColor: decision === 'approved' ? '#2e7d32' : '#c62828',
             didOpen: () => {
-                const canvas = document.querySelector('.swal2-container canvas');
+                const modalContainer = Swal.getHtmlContainer();
+                const canvas = modalContainer.querySelector('canvas');
                 dirSigPad = new SignaturePad(canvas);
+                
+                // กำหนดปุ่มล้างลายเซ็นที่อยู่ภายในโครงสร้าง Modal
+                modalContainer.querySelector('#btn-clear-modal-sig').addEventListener('click', () => {
+                    dirSigPad.clear();
+                });
             },
             preConfirm: () => {
-                if(dirSigPad.isEmpty()) { Swal.showValidationMessage('กรุณาลงลายเซ็นก่อนยืนยันครับ'); return false; }
+                if(dirSigPad.isEmpty()) { 
+                    Swal.showValidationMessage('จำเป็นต้องมีข้อมูลลายเซ็นเพื่อบันทึกประทับตราลงนามในแผ่นคำร้อง PDF ทางการ'); 
+                    return false; 
+                }
                 return dirSigPad.toDataURL();
             }
         }).then(async (result) => {
             if (result.isConfirmed) {
-                await updateDoc(doc(db, "requests", currentActiveId), {
-                    status: "เสร็จสิ้น", // ขั้นตอนสุดท้ายแสดงคำว่า "เสร็จสิ้น" เสมอ
-                    directorApproval: decision,
-                    directorSignature: result.value,
-                    actionDate: new Date()
-                });
-                Swal.fire('บันทึกสำเร็จ', 'ดําเนินการเสร็จสิ้นเรียบร้อย', 'success');
+                try {
+                    // ขั้นตอนสุดท้ายจะขึ้นสถานะว่า "เสร็จสิ้น" เสมอ โดยระบุตัวแปรตัดสินใจไว้ในฟิลด์อ้างอิงภายใน
+                    await updateDoc(doc(db, "requests", currentActiveId), {
+                        status: "เสร็จสิ้น", 
+                        isRejected: false,
+                        rejectedTo: "",
+                        directorApproval: decision,
+                        directorSignature: result.value,
+                        actionDate: new Date()
+                    });
+                    Swal.fire('ดำเนินการเรียบร้อย', 'ระบบเซ็นรับรองและสรุปบันทึกการพิจารณาคำร้องสำเร็จแล้ว', 'success');
+                } catch (error) {
+                    Swal.fire('ข้อผิดพลาด', error.message, 'error');
+                }
             }
         });
     }
 
-    // โหลดและบันทึกการตั้งค่าระบบ
+    // โหลดข้อมูลโรงเรียนร่วมกันจากตำแหน่งชุดข้อมูล doc("system", "settings") ทางการ
     async function loadSettings() {
-        const docSnap = await getDoc(doc(db, "settings", "global"));
-        if(docSnap.exists()) {
-            const d = docSnap.data();
-            document.getElementById('set-school-name').value = d.schoolName || '';
-            document.getElementById('set-registrar-name').value = d.registrarName || '';
-            document.getElementById('set-director-name').value = d.directorName || '';
-        }
+        try {
+            const docSnap = await getDoc(doc(db, "system", "settings"));
+            if(docSnap.exists()) {
+                const d = docSnap.data();
+                document.getElementById('set-school-name').value = d.schoolName || '';
+                document.getElementById('set-registrar-name').value = d.registrarName || '';
+                document.getElementById('set-director-name').value = d.directorName || '';
+            }
+        } catch (e) { console.error("โหลดข้อมูลล้มเหลว:", e); }
     }
     loadSettings();
 
+    // บันทึกการตั้งค่าลงตำแหน่งข้อมูลกลางเพื่อให้ฝ่ายทะเบียนกับฝ่ายนักเรียนนำไปแสดงผลคู่ขนานกันได้ถูกต้อง
     window.saveSettings = async function(e) {
         e.preventDefault();
-        await setDoc(doc(db, "settings", "global"), {
-            schoolName: document.getElementById('set-school-name').value,
-            registrarName: document.getElementById('set-registrar-name').value,
-            directorName: document.getElementById('set-director-name').value
-        });
-        Swal.fire('สำเร็จ', 'บันทึกการตั้งค่าโครงสร้างโรงเรียนแล้ว', 'success');
+        try {
+            await setDoc(doc(db, "system", "settings"), {
+                schoolName: document.getElementById('set-school-name').value,
+                registrarName: document.getElementById('set-registrar-name').value,
+                directorName: document.getElementById('set-director-name').value
+            });
+            Swal.fire('บันทึกสำเร็จ', 'อัปเดตโครงสร้างและฐานข้อมูลข้อมูลสถานศึกษาเรียบร้อยแล้ว', 'success');
+        } catch (e) { Swal.fire('ข้อผิดพลาด', e.message, 'error'); }
     }
 </script>
 </body>
