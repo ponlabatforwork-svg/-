@@ -3,303 +3,308 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>แบบคำร้องขอย้ายออก/ลาออกจากสถานศึกษา</title>
+    <title>ระบบคำร้องขอย้ายออก/ลาออก</title>
     
-    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://cdn.jsdelivr.net/npm/signature_pad@4.1.5/dist/signature_pad.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 
     <style>
+        /* =========================================
+           ส่วนที่ 1: การตกแต่งหน้าจอเว็บ (ฟอร์มกรอก)
+           ========================================= */
         :root {
             --primary: #2c3e50;
-            --bg-color: #e2e8f0;
+            --bg: #f4f7f6;
+            --border: #ddd;
         }
         body {
             font-family: 'Sarabun', sans-serif;
-            background-color: var(--bg-color);
-            margin: 0;
-            padding: 20px;
-            color: #000;
-            font-size: 16pt; /* ขนาดตัวอักษรมาตรฐานเอกสารราชการ */
-            line-height: 1.5;
+            background-color: var(--bg);
+            margin: 0; padding: 20px;
+            color: #333;
         }
-
-        /* --- แผงควบคุมด้านบน (ไม่แสดงตอนพิมพ์) --- */
-        .controls {
-            max-width: 210mm;
-            margin: 0 auto 20px auto;
+        .app-container {
+            max-width: 800px;
+            margin: 0 auto;
             background: #fff;
-            padding: 15px;
-            border-radius: 8px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
         }
-        .role-btn {
-            padding: 8px 15px;
-            border: 1px solid var(--primary);
-            background: transparent;
-            border-radius: 20px;
-            cursor: pointer;
+        .header-title {
+            text-align: center;
+            color: var(--primary);
+            margin-bottom: 20px;
+            border-bottom: 2px solid var(--primary);
+            padding-bottom: 10px;
+        }
+        .form-section { margin-bottom: 25px; }
+        .form-section h3 { font-size: 1.1rem; color: var(--primary); margin-bottom: 15px; }
+        .form-row { display: flex; gap: 15px; margin-bottom: 15px; flex-wrap: wrap; }
+        .form-col { flex: 1; min-width: 200px; }
+        label { display: block; margin-bottom: 5px; font-weight: 500; font-size: 0.95rem; }
+        input[type="text"], select, input[type="date"] {
+            width: 100%; padding: 10px;
+            border: 1px solid var(--border);
+            border-radius: 5px;
             font-family: 'Sarabun', sans-serif;
-            font-size: 14pt;
+            font-size: 1rem;
+            box-sizing: border-box;
         }
-        .role-btn.active {
-            background: var(--primary);
-            color: #fff;
+        .radio-group { display: flex; gap: 15px; align-items: center; padding: 10px 0; }
+        .btn {
+            padding: 10px 20px; border: none; border-radius: 5px;
+            font-family: 'Sarabun', sans-serif; font-size: 1rem;
+            cursor: pointer; transition: 0.3s; color: #fff;
+            width: 100%;
         }
-        .action-btn {
-            padding: 8px 20px;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            font-family: 'Sarabun', sans-serif;
-            font-size: 14pt;
-            color: white;
-            transition: 0.3s;
-        }
-        .btn-submit { background-color: #3498db; }
-        .btn-save { background-color: #27ae60; }
-        .btn-pdf { background-color: #e74c3c; }
-        .btn-pdf:disabled { background-color: #95a5a6; cursor: not-allowed; }
+        .btn-primary { background: var(--primary); }
+        .btn-success { background: #27ae60; }
+        .btn-danger { background: #e74c3c; }
+        .btn-disabled { background: #95a5a6; cursor: not-allowed; }
+        
+        .sig-container { border: 1px dashed var(--border); background: #fafafa; position: relative; }
+        canvas { width: 100%; height: 150px; cursor: crosshair; }
+        .btn-clear { position: absolute; top: 5px; right: 5px; font-size: 0.8rem; background: #e2e8f0; border: none; padding: 3px 8px; border-radius: 3px; cursor: pointer; }
 
-        /* --- หน้ากระดาษ A4 --- */
-        .a4-page {
+        .role-switch { text-align: center; margin-bottom: 20px; }
+        .role-btn { padding: 8px 20px; border: 1px solid var(--primary); background: transparent; border-radius: 20px; cursor: pointer; }
+        .role-btn.active { background: var(--primary); color: white; }
+        .hidden { display: none !important; }
+
+        /* =========================================
+           ส่วนที่ 2: เทมเพลตสำหรับพิมพ์ PDF (จัดวางแบบหนังสือราชการเป๊ะๆ)
+           ซ่อนไว้ไม่ให้แสดงบนเว็บ แต่จะถูกเรียกใช้ตอนพิมพ์
+           ========================================= */
+        #pdfWrapper {
+            width: 0; height: 0; overflow: hidden; /* ซ่อนจากหน้าเว็บ */
+        }
+        .official-doc {
             width: 210mm;
             min-height: 297mm;
-            margin: 0 auto;
             background: white;
-            padding: 20mm 25mm 20mm 25mm; /* ขอบกระดาษ */
-            box-shadow: 0 0 10px rgba(0,0,0,0.2);
+            /* ขอบกระดาษราชการ: บน 2.5cm, ซ้าย 2.5cm, ขวา 2cm, ล่าง 2cm */
+            padding: 25mm 20mm 20mm 25mm;
             box-sizing: border-box;
-            position: relative;
-        }
-
-        /* --- การตกแต่งฟอร์มในหน้ากระดาษ --- */
-        .text-center { text-align: center; }
-        .text-right { text-align: right; }
-        .mt-1 { margin-top: 10px; }
-        .mt-2 { margin-top: 20px; }
-        .mt-4 { margin-top: 40px; }
-        .mb-2 { margin-bottom: 20px; }
-        
-        /* ช่องกรอกข้อความแบบเส้นประ */
-        .inline-input {
-            border: none;
-            border-bottom: 1px dotted #000;
-            background: transparent;
-            font-family: 'Sarabun', sans-serif;
+            /* ใช้ TH Sarabun PSK ถ้ามีในเครื่อง ถ้าไม่มีใช้ Sarabun ของ Google */
+            font-family: 'TH Sarabun PSK', 'Sarabun', sans-serif;
             font-size: 16pt;
             color: #000;
-            padding: 0 5px;
-            outline: none;
-            text-align: center;
+            line-height: 1.3;
         }
-        select.inline-input {
-            appearance: none;
-            -webkit-appearance: none;
-            cursor: pointer;
-        }
+        .doc-center { text-align: center; }
+        .doc-right { text-align: right; }
+        .doc-indent { padding-left: 2.5cm; }
+        .doc-bold { font-weight: bold; }
+        .garuda-img { width: 4.5cm; height: auto; margin-bottom: 10px; }
         
-        .flex-row {
-            display: flex;
-            align-items: center;
-            flex-wrap: wrap;
-            margin-bottom: 5px;
-        }
-        
-        /* Checkbox แบบทางการ */
-        .check-group {
-            display: flex;
-            align-items: center;
-            margin-right: 20px;
-            cursor: pointer;
-        }
-        .check-group input[type="radio"], .check-group input[type="checkbox"] {
-            width: 18px;
-            height: 18px;
-            margin-right: 8px;
-            cursor: pointer;
-        }
-
-        /* ตราครุฑจำลอง */
-        .garuda {
-            width: 60px;
-            height: auto;
-            margin: 0 auto 10px auto;
-            display: block;
-        }
-
-        /* กล่องลายเซ็น */
-        .sig-box {
-            display: inline-block;
-            text-align: center;
-            margin-top: 20px;
-        }
-        .canvas-container {
-            border: 1px dashed #ccc;
-            background: #fafafa;
-            position: relative;
-            margin-bottom: 5px;
-        }
-        canvas {
-            width: 200px;
-            height: 80px;
-            cursor: crosshair;
-        }
-        .btn-clear {
-            position: absolute;
-            top: 2px;
-            right: 2px;
-            font-size: 10pt;
-            background: #e2e8f0;
-            border: none;
-            cursor: pointer;
-            padding: 2px 5px;
-        }
-
-        /* โครงสร้างส่วนล่าง (ครู & ผอ.) */
-        .bottom-section {
-            display: flex;
-            justify-content: space-between;
-            margin-top: 30px;
-        }
-        .half-col {
-            width: 48%;
-        }
-
-        .hidden { display: none !important; }
+        /* Checkbox จำลองบนเอกสาร */
+        .check-box { font-family: 'Arial', sans-serif; font-size: 18pt; margin-right: 5px; }
+        .data-text { color: #000; } /* เปลี่ยนสีเป็นน้ำเงินได้ถ้าต้องการให้เหมือนเขียนปากกา */
     </style>
 </head>
 <body>
 
-    <div class="controls" id="controlPanel">
-        <div>
-            <button id="btnRoleParent" class="role-btn active" onclick="switchRole('parent')"><i class="fas fa-user"></i> ผู้ปกครอง</button>
-            <button id="btnRoleDirector" class="role-btn" onclick="switchRole('director')"><i class="fas fa-user-tie"></i> ผู้อำนวยการ</button>
+    <div class="role-switch">
+        <button id="btnRoleParent" class="role-btn active" onclick="switchRole('parent')">มุมมองผู้ปกครอง</button>
+        <button id="btnRoleDirector" class="role-btn" onclick="switchRole('director')">มุมมองผู้อำนวยการ</button>
+    </div>
+
+    <div class="app-container" id="uiForm">
+        <h2 class="header-title"><i class="fas fa-edit"></i> แบบฟอร์มกรอกข้อมูลขอย้ายออก/ลาออก</h2>
+        
+        <div class="form-section">
+            <div class="form-row">
+                <div class="form-col">
+                    <label>เขียนที่ (ระบุสถานที่ / โรงเรียน)</label>
+                    <input type="text" id="inpWriteAt" value="โรงเรียน..........................................">
+                </div>
+                <div class="form-col">
+                    <label>วันที่กรอกคำร้อง</label>
+                    <input type="date" id="inpDate">
+                </div>
+            </div>
         </div>
-        <div>
-            <button id="btnSubmit" class="action-btn btn-submit" onclick="submitForm()"><i class="fas fa-paper-plane"></i> ส่งคำร้อง</button>
-            <button id="btnSaveDir" class="action-btn btn-save hidden" onclick="saveDirectorDecision()"><i class="fas fa-save"></i> บันทึกผล</button>
-            <button id="btnDownload" class="action-btn btn-pdf" onclick="generatePDF()" disabled><i class="fas fa-file-pdf"></i> พิมพ์ PDF</button>
+
+        <div class="form-section">
+            <h3>ข้อมูลผู้ปกครอง</h3>
+            <div class="form-row">
+                <div class="form-col" style="flex: 0.3;">
+                    <label>คำนำหน้า</label>
+                    <select id="inpParentPrefix">
+                        <option value="นาย">นาย</option>
+                        <option value="นาง">นาง</option>
+                        <option value="นางสาว">นางสาว</option>
+                    </select>
+                </div>
+                <div class="form-col">
+                    <label>ชื่อ - สกุล</label>
+                    <input type="text" id="inpParentName" placeholder="ระบุชื่อ-นามสกุล">
+                </div>
+            </div>
+        </div>
+
+        <div class="form-section">
+            <h3>ข้อมูลนักเรียน</h3>
+            <div class="form-row">
+                <div class="form-col" style="flex: 0.3;">
+                    <label>คำนำหน้า</label>
+                    <select id="inpStudentPrefix">
+                        <option value="เด็กชาย">เด็กชาย</option>
+                        <option value="เด็กหญิง">เด็กหญิง</option>
+                        <option value="นาย">นาย</option>
+                        <option value="นางสาว">นางสาว</option>
+                    </select>
+                </div>
+                <div class="form-col">
+                    <label>ชื่อ - สกุล</label>
+                    <input type="text" id="inpStudentName" placeholder="ระบุชื่อ-นามสกุล">
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-col">
+                    <label>ระดับชั้นมัธยมศึกษาปีที่</label>
+                    <input type="text" id="inpLevel" placeholder="เช่น 1/1">
+                </div>
+                <div class="form-col">
+                    <label>เลขประจำตัวนักเรียน</label>
+                    <input type="text" id="inpStudentId">
+                </div>
+                <div class="form-col">
+                    <label>ปีการศึกษา</label>
+                    <input type="text" id="inpYear">
+                </div>
+            </div>
+        </div>
+
+        <div class="form-section">
+            <h3>ความประสงค์</h3>
+            <div class="radio-group">
+                <label><input type="radio" name="inpIntent" value="ลาออก" checked> ลาออก</label>
+                <label><input type="radio" name="inpIntent" value="ย้ายออก"> ย้ายออก</label>
+            </div>
+            
+            <label style="margin-top: 10px;">เนื่องด้วยมีความจำเป็น (เลือก 1 ข้อ)</label>
+            <div class="radio-group">
+                <label><input type="radio" name="inpReason" value="study" checked onchange="toggleReason()"> ไปศึกษาต่อที่</label>
+                <label><input type="radio" name="inpReason" value="work" onchange="toggleReason()"> ไปประกอบอาชีพ</label>
+                <label><input type="radio" name="inpReason" value="other" onchange="toggleReason()"> อื่นๆ</label>
+            </div>
+            <input type="text" id="inpReasonText" placeholder="ระบุรายละเอียด (ชื่อสถานศึกษา หรือ เหตุผลอื่นๆ)..." style="margin-top: 5px;">
+        </div>
+
+        <div class="form-section">
+            <h3>ลงลายมือชื่อผู้ปกครอง</h3>
+            <div class="sig-container">
+                <button class="btn-clear" onclick="parentPad.clear()">ล้างลายเซ็น</button>
+                <canvas id="padParent"></canvas>
+            </div>
+        </div>
+
+        <div id="directorArea" class="hidden" style="border: 1px solid #3498db; padding: 20px; border-radius: 5px; margin-bottom: 20px;">
+            <h3>ส่วนการพิจารณาของผู้อำนวยการ</h3>
+            <div class="radio-group">
+                <label><input type="radio" name="inpDirDecision" value="อนุมัติ"> อนุมัติ</label>
+                <label><input type="radio" name="inpDirDecision" value="ไม่อนุมัติ"> ไม่อนุมัติ</label>
+            </div>
+            <label style="margin-top: 10px;">ลงลายมือชื่อผู้อำนวยการ</label>
+            <div class="sig-container">
+                <button class="btn-clear" onclick="directorPad.clear()">ล้างลายเซ็น</button>
+                <canvas id="padDirector"></canvas>
+            </div>
+        </div>
+
+        <div id="parentActions">
+            <button class="btn btn-primary" onclick="submitForm()">ส่งคำร้อง</button>
+        </div>
+        <div id="directorActions" class="hidden form-row">
+            <div class="form-col"><button class="btn btn-success" onclick="saveDirector()">บันทึกการพิจารณา</button></div>
+            <div class="form-col"><button class="btn btn-danger" id="btnPrint" onclick="generatePDF()" disabled><i class="fas fa-print"></i> พิมพ์ PDF (หนังสือราชการ)</button></div>
         </div>
     </div>
 
-    <div class="a4-page" id="documentContent">
-        <div class="text-center">
-            <i class="fas fa-chess-king" style="font-size: 40px; color: #333; margin-bottom: 10px;"></i>
-        </div>
-        <div class="text-center mb-2" style="font-weight: bold; font-size: 18pt;">
-            แบบคำร้องขอย้ายออก/ลาออกจากสถานศึกษา
-        </div>
 
-        <div class="flex-row" style="justify-content: flex-end;">
-            เขียนที่ <input type="text" class="inline-input" style="width: 200px;" id="writeAt" value="โรงเรียน.........................">
-        </div>
-        <div class="flex-row" style="justify-content: flex-end;">
-            วันที่ <input type="text" class="inline-input" style="width: 40px;" placeholder="......."> 
-            เดือน <input type="text" class="inline-input" style="width: 100px;" placeholder=".................."> 
-            พ.ศ. <input type="text" class="inline-input" style="width: 60px;" placeholder="...........">
-        </div>
-
-        <div class="mt-2">
-            <div><strong>เรียน</strong> ผู้อำนวยการโรงเรียน</div>
-            <div><strong>เรื่อง</strong> ขอย้ายออก/ลาออกจากสถานศึกษา</div>
-        </div>
-
-        <div class="mt-2" style="text-indent: 50px;">
-            ข้าพเจ้า 
-            <select class="inline-input" id="parentPrefix">
-                <option value="">(เลือกคำนำหน้า)</option>
-                <option value="นาย">นาย</option>
-                <option value="นาง">นาง</option>
-                <option value="นางสาว">นางสาว</option>
-            </select>
-            <input type="text" class="inline-input" style="width: 250px;" id="parentName" placeholder="ชื่อ - สกุล ผู้ปกครอง">
-        </div>
-        <div class="mt-1">
-            เป็นผู้ปกครองของ 
-            <select class="inline-input" id="studentPrefix">
-                <option value="">(เลือกคำนำหน้า)</option>
-                <option value="เด็กชาย">เด็กชาย</option>
-                <option value="เด็กหญิง">เด็กหญิง</option>
-                <option value="นาย">นาย</option>
-                <option value="นางสาว">นางสาว</option>
-            </select>
-            <input type="text" class="inline-input" style="width: 250px;" id="studentName" placeholder="ชื่อ - สกุล นักเรียน">
-        </div>
-        <div class="mt-1 flex-row">
-            นักเรียนระดับชั้นมัธยมศึกษาปีที่ <input type="text" class="inline-input" style="width: 50px;" id="studentLevel">
-            เลขประจำตัวนักเรียน <input type="text" class="inline-input" style="width: 120px;" id="studentId">
-            ปีการศึกษา <input type="text" class="inline-input" style="width: 80px;" id="academicYear">
-        </div>
-
-        <div class="mt-2">
-            มีความประสงค์จะขอ
-            <div class="flex-row mt-1" style="margin-left: 50px;">
-                <label class="check-group"><input type="radio" name="intent" value="ลาออก"> ลาออก</label>
-                <label class="check-group"><input type="radio" name="intent" value="ย้ายออก"> ย้ายออก</label>
+    <div id="pdfWrapper">
+        <div class="official-doc" id="officialDocument">
+            <div class="doc-center">
+                <img src="garuda.png" alt="ตราครุฑ" class="garuda-img">
             </div>
-        </div>
-
-        <div class="mt-2">
-            เนื่องด้วยมีความจำเป็นดังต่อไปนี้
-            <div class="flex-row mt-1" style="margin-left: 50px;">
-                <label class="check-group"><input type="radio" name="reason" value="ศึกษาต่อ"> ไปศึกษาต่อที่</label>
-                <input type="text" class="inline-input" style="width: 250px;" id="reasonStudy" placeholder="ระบุชื่อสถานศึกษา">
-            </div>
-            <div class="flex-row mt-1" style="margin-left: 50px;">
-                <label class="check-group"><input type="radio" name="reason" value="ประกอบอาชีพ"> ไปประกอบอาชีพ</label>
-            </div>
-            <div class="flex-row mt-1" style="margin-left: 50px;">
-                <label class="check-group"><input type="radio" name="reason" value="อื่นๆ"> อื่นๆ (ระบุ)</label>
-                <input type="text" class="inline-input" style="width: 300px;" id="reasonOther" placeholder="...">
-            </div>
-        </div>
-
-        <div class="text-right mt-4" style="margin-right: 50px;">
-            ขอแสดงความนับถือ
-        </div>
-
-        <div class="text-right" style="margin-right: 20px;">
-            <div class="sig-box">
-                <div class="canvas-container">
-                    <button class="btn-clear no-print" onclick="parentPad.clear()"><i class="fas fa-undo"></i></button>
-                    <canvas id="parentSignature"></canvas>
-                </div>
-                <div>(ลงชื่อ) <input type="text" class="inline-input" style="width: 150px;" placeholder="ชื่อตัวบรรจง"> ผู้ปกครอง</div>
-            </div>
-        </div>
-
-        <div class="bottom-section">
-            <div class="half-col" style="border: 1px solid #000; padding: 10px;">
-                <div class="text-center" style="font-weight: bold;">ความคิดเห็นคุณครูที่ปรึกษา</div>
-                <div class="mt-1">ครูที่ปรึกษาคนที่ ๑</div>
-                <input type="text" class="inline-input" style="width: 100%; margin-bottom: 10px;">
-                <div class="mt-1">ครูที่ปรึกษาคนที่ ๒</div>
-                <input type="text" class="inline-input" style="width: 100%;">
+            
+            <div class="doc-center doc-bold" style="font-size: 20pt; margin-bottom: 20px;">
+                แบบคำร้องขอย้ายออก/ลาออกจากสถานศึกษา
             </div>
 
-            <div class="half-col" style="border: 1px solid #000; padding: 10px; position: relative;" id="directorSection">
-                <div id="directorOverlay" style="position: absolute; top:0; left:0; width:100%; height:100%; background:rgba(255,255,255,0.7); z-index: 10;"></div>
-                
-                <div class="text-center" style="font-weight: bold;">ผู้อำนวยการสถานศึกษา</div>
-                <div class="flex-row mt-1" style="justify-content: center;">
-                    <label class="check-group"><input type="radio" name="directorApprove" value="อนุมัติ"> อนุมัติ</label>
-                    <label class="check-group"><input type="radio" name="directorApprove" value="ไม่อนุมัติ"> ไม่อนุมัติ</label>
+            <div class="doc-right">
+                เขียนที่ <span class="data-text" id="outWriteAt">...................................................</span>
+            </div>
+            <div class="doc-right" style="margin-bottom: 15px;">
+                วันที่ <span class="data-text" id="outDay">.......</span> 
+                เดือน <span class="data-text" id="outMonth">.........................</span> 
+                พ.ศ. <span class="data-text" id="outYear">................</span>
+            </div>
+
+            <div><span class="doc-bold">เรียน</span> ผู้อำนวยการโรงเรียน</div>
+            <div style="margin-bottom: 15px;"><span class="doc-bold">เรื่อง</span> ขอย้ายออก/ลาออกจากสถานศึกษา</div>
+
+            <div class="doc-indent">
+                ข้าพเจ้า <span class="data-text" id="outParentPrefix">........</span><span class="data-text" id="outParentName">........................................................................</span>
+            </div>
+            <div style="margin-bottom: 10px;">
+                เป็นผู้ปกครองของ <span class="data-text" id="outStudentPrefix">...............</span><span class="data-text" id="outStudentName">.......................................................................</span> 
+                นักเรียนระดับชั้นมัธยมศึกษาปีที่ <span class="data-text" id="outLevel">.........</span> 
+                เลขประจำตัวนักเรียน <span class="data-text" id="outStudentId">........................</span> 
+                ปีการศึกษา <span class="data-text" id="outYearSpan">................</span>
+            </div>
+
+            <div style="margin-bottom: 10px;">
+                มีความประสงค์จะขอ &nbsp;&nbsp;&nbsp;
+                <span class="check-box" id="chkResign">☐</span> ลาออก &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                <span class="check-box" id="chkTransfer">☐</span> ย้ายออก
+            </div>
+
+            <div>เนื่องด้วยมีความจำเป็นดังต่อไปนี้</div>
+            <div class="doc-indent">
+                <span class="check-box" id="chkReasonStudy">☐</span> ไปศึกษาต่อที่ <span class="data-text" id="outReasonStudy">...........................................................................................................</span><br>
+                <span class="check-box" id="chkReasonWork">☐</span> ไปประกอบอาชีพ<br>
+                <span class="check-box" id="chkReasonOther">☐</span> อื่นๆ (ระบุ) <span class="data-text" id="outReasonOther">...............................................................................................................</span>
+            </div>
+
+            <div class="doc-right" style="margin-top: 30px; margin-right: 2cm;">
+                ขอแสดงความนับถือ
+            </div>
+            <div class="doc-right" style="margin-top: 10px; position: relative;">
+                <img id="outParentSig" style="height: 40px; position: absolute; right: 2.5cm; top: -15px; display: none;">
+                (ลงชื่อ) ........................................................................ ผู้ปกครอง
+            </div>
+            <div class="doc-right" style="margin-top: 5px;">
+                (<span class="data-text" id="outParentFullName">........................................................................</span>)
+            </div>
+
+            <div style="display: flex; justify-content: space-between; margin-top: 40px;">
+                <div style="width: 48%;">
+                    <div class="doc-center doc-bold">ความคิดเห็นคุณครูที่ปรึกษา</div>
+                    <div style="margin-top: 15px;">ครูที่ปรึกษาคนที่ ๑ ...........................................................</div>
+                    <div style="margin-top: 5px;">.............................................................................................</div>
+                    <div style="margin-top: 15px;">ครูที่ปรึกษาคนที่ ๒ ...........................................................</div>
+                    <div style="margin-top: 5px;">.............................................................................................</div>
                 </div>
                 
-                <div class="text-center mt-1">
-                    <div class="sig-box" style="margin-top: 5px;">
-                        <div class="canvas-container">
-                            <button class="btn-clear no-print" onclick="directorPad.clear()"><i class="fas fa-undo"></i></button>
-                            <canvas id="directorSignature"></canvas>
-                        </div>
-                        <div style="font-size: 14pt;">(ลงชื่อ) ผู้อำนวยการสถานศึกษา</div>
-                        <div style="font-size: 14pt;">(ลงวันที่) <input type="text" class="inline-input" style="width: 100px;"></div>
+                <div style="width: 48%;">
+                    <div class="doc-center doc-bold">ผู้อำนวยการสถานศึกษา</div>
+                    <div style="margin-top: 15px;">
+                        <span class="check-box" id="chkDirApprove">☐</span> อนุมัติ &nbsp;&nbsp;&nbsp;&nbsp;
+                        <span class="check-box" id="chkDirReject">☐</span> ไม่อนุมัติ
+                    </div>
+                    <div style="margin-top: 30px; position: relative;">
+                        <img id="outDirectorSig" style="height: 40px; position: absolute; left: 1cm; top: -25px; display: none;">
+                        ลงชื่อ ........................................................................
+                    </div>
+                    <div class="doc-center" style="margin-top: 5px;">ผู้อำนวยการสถานศึกษา</div>
+                    <div style="margin-top: 5px;">
+                        (ลงวันที่) ....................................................................
                     </div>
                 </div>
             </div>
@@ -307,105 +312,174 @@
     </div>
 
     <script>
-        // กำหนด Signature Pad
-        const canvasParent = document.getElementById('parentSignature');
-        const canvasDirector = document.getElementById('directorSignature');
-        
-        function resizeCanvas(canvas) {
+        // Setup ลายเซ็น
+        const canvasP = document.getElementById('padParent');
+        const canvasD = document.getElementById('padDirector');
+        function resizeC(c) {
             const ratio = Math.max(window.devicePixelRatio || 1, 1);
-            canvas.width = canvas.offsetWidth * ratio;
-            canvas.height = canvas.offsetHeight * ratio;
-            canvas.getContext("2d").scale(ratio, ratio);
+            c.width = c.offsetWidth * ratio;
+            c.height = c.offsetHeight * ratio;
+            c.getContext("2d").scale(ratio, ratio);
         }
+        window.addEventListener("resize", () => { resizeC(canvasP); resizeC(canvasD); });
+        resizeC(canvasP); resizeC(canvasD);
         
-        resizeCanvas(canvasParent);
-        resizeCanvas(canvasDirector);
+        const parentPad = new SignaturePad(canvasP, { penColor: "blue" });
+        const directorPad = new SignaturePad(canvasD, { penColor: "blue" });
 
-        const parentPad = new SignaturePad(canvasParent, { penColor: "blue" });
-        const directorPad = new SignaturePad(canvasDirector, { penColor: "blue" });
+        // จัดการช่องเหตุผล
+        function toggleReason() {
+            const reason = document.querySelector('input[name="inpReason"]:checked').value;
+            const inpText = document.getElementById('inpReasonText');
+            if(reason === 'work') {
+                inpText.style.display = 'none';
+                inpText.value = '';
+            } else {
+                inpText.style.display = 'block';
+                inpText.placeholder = reason === 'study' ? 'ระบุชื่อสถานศึกษาที่ไปศึกษาต่อ...' : 'ระบุเหตุผลอื่นๆ...';
+            }
+        }
 
-        // การสลับ Role
+        // จัดการการแสดงผล Role
         function switchRole(role) {
             document.getElementById('btnRoleParent').classList.remove('active');
             document.getElementById('btnRoleDirector').classList.remove('active');
-
-            const dirOverlay = document.getElementById('directorOverlay');
             
-            if (role === 'parent') {
+            if(role === 'parent') {
                 document.getElementById('btnRoleParent').classList.add('active');
-                document.getElementById('btnSubmit').classList.remove('hidden');
-                document.getElementById('btnSaveDir').classList.add('hidden');
-                dirOverlay.style.display = 'block'; // บล็อคส่วนผอ.
+                document.getElementById('directorArea').classList.add('hidden');
+                document.getElementById('parentActions').classList.remove('hidden');
+                document.getElementById('directorActions').classList.add('hidden');
             } else {
                 document.getElementById('btnRoleDirector').classList.add('active');
-                document.getElementById('btnSubmit').classList.add('hidden');
-                document.getElementById('btnSaveDir').classList.remove('hidden');
-                dirOverlay.style.display = 'none'; // เปิดให้ผอ.ใช้งาน
+                document.getElementById('directorArea').classList.remove('hidden');
+                document.getElementById('parentActions').classList.add('hidden');
+                document.getElementById('directorActions').classList.remove('hidden');
+                resizeC(canvasD); // ให้ canvas โหลดขนาดใหม่เมื่อถูกแสดง
             }
         }
 
-        // ส่งคำร้อง (ผู้ปกครอง)
+        // ผู้ปกครองกดส่งฟอร์ม
         function submitForm() {
             if(parentPad.isEmpty()) {
-                Swal.fire('แจ้งเตือน', 'กรุณาลงลายมือชื่อผู้ปกครอง', 'warning');
-                return;
+                Swal.fire('ข้อมูลไม่ครบ', 'กรุณาลงลายมือชื่อผู้ปกครอง', 'warning'); return;
             }
-            Swal.fire({
-                title: 'ยืนยันการส่งคำร้อง?',
-                icon: 'question',
-                showCancelButton: true,
-                confirmButtonText: 'ส่งคำร้อง',
-                cancelButtonText: 'ยกเลิก'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    Swal.fire('สำเร็จ!', 'ส่งคำร้องให้ผู้อำนวยการเรียบร้อยแล้ว', 'success');
-                }
-            });
+            Swal.fire('สำเร็จ', 'ส่งคำร้องไปยังผู้อำนวยการเรียบร้อยแล้ว', 'success');
         }
 
-        // บันทึกผล (ผู้อำนวยการ)
-        function saveDirectorDecision() {
-            const decision = document.querySelector('input[name="directorApprove"]:checked');
-            if(!decision) {
-                Swal.fire('แจ้งเตือน', 'กรุณาเลือก อนุมัติ หรือ ไม่อนุมัติ', 'warning');
-                return;
-            }
-            if(directorPad.isEmpty()) {
-                Swal.fire('แจ้งเตือน', 'กรุณาลงลายมือชื่อผู้อำนวยการ', 'warning');
-                return;
-            }
-
-            if(decision.value === 'อนุมัติ') {
-                Swal.fire('สำเร็จ!', 'อนุมัติคำร้องเรียบร้อย สามารถพิมพ์ PDF ได้', 'success');
-                document.getElementById('btnDownload').disabled = false;
+        // ผอ. กดบันทึกผล
+        function saveDirector() {
+            const dec = document.querySelector('input[name="inpDirDecision"]:checked');
+            if(!dec) { Swal.fire('ข้อมูลไม่ครบ', 'กรุณาเลือก อนุมัติ หรือ ไม่อนุมัติ', 'warning'); return; }
+            if(directorPad.isEmpty()) { Swal.fire('ข้อมูลไม่ครบ', 'กรุณาลงลายมือชื่อผู้อำนวยการ', 'warning'); return; }
+            
+            if(dec.value === 'อนุมัติ') {
+                Swal.fire('อนุมัติสำเร็จ', 'คุณสามารถพิมพ์ PDF เอกสารราชการได้แล้ว', 'success');
+                document.getElementById('btnPrint').disabled = false;
             } else {
-                Swal.fire('บันทึกผล', 'ไม่อนุมัติคำร้อง', 'error');
-                document.getElementById('btnDownload').disabled = true;
+                Swal.fire('บันทึกผล', 'คุณไม่อนุมัติคำร้องนี้ (ไม่สามารถพิมพ์ PDF ได้)', 'error');
+                document.getElementById('btnPrint').disabled = true;
             }
         }
 
-        // สร้าง PDF
-        function generatePDF() {
-            // ซ่อนปุ่มล้างลายเซ็นและกรอบก่อนพิมพ์
-            const clears = document.querySelectorAll('.no-print');
-            const canvases = document.querySelectorAll('.canvas-container');
-            clears.forEach(btn => btn.style.display = 'none');
-            canvases.forEach(c => c.style.border = 'none');
+        // ==========================================
+        // ฟังก์ชันดึงข้อมูลจากหน้าเว็บ ไปใส่ในเทมเพลต PDF
+        // ==========================================
+        function mapDataToTemplate() {
+            // 1. ข้อมูลทั่วไป
+            document.getElementById('outWriteAt').innerText = document.getElementById('inpWriteAt').value;
+            
+            // จัดการวันที่ (แยก วัน เดือน ปี)
+            const dInput = document.getElementById('inpDate').value;
+            if(dInput) {
+                const dateObj = new Date(dInput);
+                const thaiMonths = ["มกราคม","กุมภาพันธ์","มีนาคม","เมษายน","พฤษภาคม","มิถุนายน","กรกฎาคม","สิงหาคม","กันยายน","ตุลาคม","พฤศจิกายน","ธันวาคม"];
+                document.getElementById('outDay').innerText = dateObj.getDate();
+                document.getElementById('outMonth').innerText = thaiMonths[dateObj.getMonth()];
+                document.getElementById('outYear').innerText = dateObj.getFullYear() + 543;
+            }
 
-            // ใช้ html2pdf เพื่อจับภาพหน้า A4
-            const element = document.getElementById('documentContent');
+            // 2. ข้อมูลบุคคล
+            document.getElementById('outParentPrefix').innerText = document.getElementById('inpParentPrefix').value;
+            document.getElementById('outParentName').innerText = document.getElementById('inpParentName').value;
+            document.getElementById('outParentFullName').innerText = document.getElementById('inpParentPrefix').value + document.getElementById('inpParentName').value;
+            
+            document.getElementById('outStudentPrefix').innerText = document.getElementById('inpStudentPrefix').value;
+            document.getElementById('outStudentName').innerText = document.getElementById('inpStudentName').value;
+            document.getElementById('outLevel').innerText = document.getElementById('inpLevel').value;
+            document.getElementById('outStudentId').innerText = document.getElementById('inpStudentId').value;
+            document.getElementById('outYearSpan').innerText = document.getElementById('inpYear').value;
+
+            // 3. จัดการ Checkbox (ใส่สัญลักษณ์ ☑ แทนช่องว่าง)
+            const checkedIcon = "☑";
+            const uncheckIcon = "☐";
+            
+            // ความประสงค์
+            const intent = document.querySelector('input[name="inpIntent"]:checked').value;
+            document.getElementById('chkResign').innerText = intent === 'ลาออก' ? checkedIcon : uncheckIcon;
+            document.getElementById('chkTransfer').innerText = intent === 'ย้ายออก' ? checkedIcon : uncheckIcon;
+
+            // เหตุผล
+            const reason = document.querySelector('input[name="inpReason"]:checked').value;
+            const rText = document.getElementById('inpReasonText').value;
+            
+            document.getElementById('chkReasonStudy').innerText = uncheckIcon;
+            document.getElementById('chkReasonWork').innerText = uncheckIcon;
+            document.getElementById('chkReasonOther').innerText = uncheckIcon;
+            document.getElementById('outReasonStudy').innerText = "...........................................................................................................";
+            document.getElementById('outReasonOther').innerText = "...............................................................................................................";
+
+            if(reason === 'study') { 
+                document.getElementById('chkReasonStudy').innerText = checkedIcon; 
+                document.getElementById('outReasonStudy').innerText = rText;
+            }
+            else if(reason === 'work') { document.getElementById('chkReasonWork').innerText = checkedIcon; }
+            else if(reason === 'other') { 
+                document.getElementById('chkReasonOther').innerText = checkedIcon; 
+                document.getElementById('outReasonOther').innerText = rText;
+            }
+
+            // 4. ลายเซ็น (แปลง Canvas เป็น Image และแทรกลงในเทมเพลต)
+            if(!parentPad.isEmpty()) {
+                const pImg = document.getElementById('outParentSig');
+                pImg.src = parentPad.toDataURL();
+                pImg.style.display = 'block';
+            }
+            
+            const dec = document.querySelector('input[name="inpDirDecision"]:checked').value;
+            document.getElementById('chkDirApprove').innerText = dec === 'อนุมัติ' ? checkedIcon : uncheckIcon;
+            document.getElementById('chkDirReject').innerText = dec === 'ไม่อนุมัติ' ? checkedIcon : uncheckIcon;
+
+            if(!directorPad.isEmpty()) {
+                const dImg = document.getElementById('outDirectorSig');
+                dImg.src = directorPad.toDataURL();
+                dImg.style.display = 'block';
+            }
+        }
+
+        // ==========================================
+        // ฟังก์ชันสั่งพิมพ์ PDF
+        // ==========================================
+        function generatePDF() {
+            Swal.fire({ title: 'กำลังสร้างเอกสาร PDF...', allowOutsideClick: false, didOpen: () => { Swal.showLoading(); }});
+            
+            // อัปเดตข้อมูลเข้า Template
+            mapDataToTemplate();
+
+            // ดึง Element Template ที่ซ่อนอยู่มาใช้
+            const element = document.getElementById('officialDocument');
+            
             const opt = {
                 margin:       0,
-                filename:     'แบบคำร้องขอย้ายออก_ลาออก.pdf',
+                filename:     'คำร้องขอย้ายออก_ลาออก_เป็นทางการ.pdf',
                 image:        { type: 'jpeg', quality: 0.98 },
                 html2canvas:  { scale: 2, useCORS: true },
                 jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
             };
 
+            // สร้าง PDF
             html2pdf().set(opt).from(element).save().then(() => {
-                // คืนค่า UI กลับมาหลังพิมพ์เสร็จ
-                clears.forEach(btn => btn.style.display = '');
-                canvases.forEach(c => c.style.border = '1px dashed #ccc');
+                Swal.close();
             });
         }
     </script>
